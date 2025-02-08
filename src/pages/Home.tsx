@@ -1,6 +1,7 @@
 import React from "react";
 import Header from "../components/Header.tsx";
-
+import SearchBar from "../components/SearchBar.tsx";
+import EventList from "../components/EventList.tsx";
 function Home() {
   return (
     <>
@@ -15,8 +16,10 @@ function Home() {
           <p className="text-gray-300 mt-4">
             This is a simple Single Page Application using React and Tailwind CSS.
           </p>
+          <SearchBar onSearch={undefined} />
         </div>
       </div>
+      <EventList />
     </>
   );
 }
