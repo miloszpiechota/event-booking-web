@@ -21,7 +21,7 @@ const Header = ({ username = "nazwa uzytkownika" }) => {
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-gray-300 transition">
+                <Link to="/create" className="hover:text-gray-300 transition">
                   Create
                 </Link>
               </li>
