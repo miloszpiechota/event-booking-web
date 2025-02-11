@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { validateAddress } from "../api/validateAddress.ts";
 const CreateEvent = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formOrganizerData, setFormData] = useState({
     u_first_name: "",
     u_last_name: "",
     u_birth_date: "",
@@ -23,27 +23,27 @@ const CreateEvent = () => {
   const validate = () => {
     let newErrors = {};
 
-    if (!formData.u_first_name.trim()) {
+    if (!formOrganizerData.u_first_name.trim()) {
         newErrors.u_first_name = "First name is required";
-      } else if (formData.u_first_name.trim().length > 50) {
+      } else if (formOrganizerData.u_first_name.trim().length > 50) {
         newErrors.u_first_name = "First name must not exceed 50 characters";
       }
       
-      if (!formData.u_last_name.trim()) {
+      if (!formOrganizerData.u_last_name.trim()) {
         newErrors.u_last_name = "Last name is required";
-      } else if (formData.u_last_name.trim().length > 50) {
+      } else if (formOrganizerData.u_last_name.trim().length > 50) {
         newErrors.u_last_name = "Last name must not exceed 50 characters";
       }
       
-    if (!/^\d{9,15}$/.test(formData.u_contact_phone)) newErrors.u_contact_phone = "Invalid phone number";
-    if (!/^\S+@\S+\.\S+$/.test(formData.u_contact_email)) newErrors.u_contact_email = "Invalid email format";
-    if (formData.u_apartment_number.trim() && !/^\d+(\/\d+)?$/.test(formData.u_apartment_number.trim())) {
+    if (!/^\d{9,15}$/.test(formOrganizerData.u_contact_phone)) newErrors.u_contact_phone = "Invalid phone number";
+    if (!/^\S+@\S+\.\S+$/.test(formOrganizerData.u_contact_email)) newErrors.u_contact_email = "Invalid email format";
+    if (formOrganizerData.u_apartment_number.trim() && !/^\d+(\/\d+)?$/.test(formOrganizerData.u_apartment_number.trim())) {
         newErrors.u_apartment_number = "Apartment number must be a simple number (e.g., 23) or in the format 'apartment building number/flat number' (e.g., 23/4)";
       }
       
-    if (!formData.u_street.trim()) {
+    if (!formOrganizerData.u_street.trim()) {
         newErrors.u_street = "Street is required";
-      } else if (formData.u_street.trim().length > 100) {
+      } else if (formOrganizerData.u_street.trim().length > 100) {
         newErrors.u_street = "Street must not exceed 100 characters";
       }
     //   } else if (!/^[A-Za-z0-9\s.,'-]+$/.test(formData.u_street.trim())) {
@@ -51,28 +51,28 @@ const CreateEvent = () => {
     //   }
       
       
-      if (!formData.u_city.trim()) {
+      if (!formOrganizerData.u_city.trim()) {
         newErrors.u_city = "City is required";
-      } else if (!/^[A-Za-z\s-]+$/.test(formData.u_city.trim())) {
+      } else if (!/^[A-Za-z\s-]+$/.test(formOrganizerData.u_city.trim())) {
         newErrors.u_city = "City can only contain letters, spaces, and hyphens";
-      } else if (formData.u_city.trim().length > 50) {
+      } else if (formOrganizerData.u_city.trim().length > 50) {
         newErrors.u_city = "City must not exceed 50 characters";
       }
       
-      if (!formData.u_country.trim()) {
+      if (!formOrganizerData.u_country.trim()) {
         newErrors.u_country = "Country is required";
-      } else if (!/^[A-Za-z\s-]+$/.test(formData.u_country.trim())) {
+      } else if (!/^[A-Za-z\s-]+$/.test(formOrganizerData.u_country.trim())) {
         newErrors.u_country = "Country can only contain letters, spaces, and hyphens";
-      } else if (formData.u_country.trim().length > 50) {
+      } else if (formOrganizerData.u_country.trim().length > 50) {
         newErrors.u_country = "Country must not exceed 50 characters";
       }
       
-    if (!/^\d{2}-\d{3}$/.test(formData.u_zip_code))newErrors.u_zip_code = "Invalid zip code (XX-XXX)";
+    if (!/^\d{2}-\d{3}$/.test(formOrganizerData.u_zip_code))newErrors.u_zip_code = "Invalid zip code (XX-XXX)";
     // Validate birth date and check if user is at least 18 years old
-    if (!formData.u_birth_date) {
+    if (!formOrganizerData.u_birth_date) {
       newErrors.u_birth_date = "Date of birth is required";
     } else {
-      const birthDate = new Date(formData.u_birth_date);
+      const birthDate = new Date(formOrganizerData.u_birth_date);
       const today = new Date();
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDifference = today.getMonth() - birthDate.getMonth();
@@ -93,7 +93,7 @@ const CreateEvent = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formOrganizerData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
@@ -104,10 +104,10 @@ const CreateEvent = () => {
 
     setIsValidatingAddress(true); // Włączamy stan ładowania walidacji adresu
     const isAddressValid = await validateAddress(
-      formData.u_street,
-      formData.u_city,
-      formData.u_zip_code,
-      formData.u_country
+      formOrganizerData.u_street,
+      formOrganizerData.u_city,
+      formOrganizerData.u_zip_code,
+      formOrganizerData.u_country
     );
     setIsValidatingAddress(false); // Wyłączamy stan ładowania
 
@@ -119,8 +119,8 @@ const CreateEvent = () => {
       return;
     }
 
-    console.log("Form Data:", formData);
-    navigate("/event-form");
+    console.log("Form Data:", formOrganizerData);
+    navigate("/event-form", { state: { formOrganizerData } }); // Przekazanie danych do EventForm
   };
 
   return (
@@ -312,7 +312,9 @@ const CreateEvent = () => {
               id="u_country"
               name="u_country"
               onChange={handleChange}
-              placeholder="PL"
+              className={`w-full p-2 border rounded ${
+                errors.u_zip_code && "border-red-500"
+              }`}
               className={`w-full p-2 border rounded ${
                 errors.u_country && "border-red-500"
               }`}
