@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateAddress } from "../api/validateAddress.ts";
+import MapPicker from "./MapPicker.tsx";
+// Importujemy komponenty z react-leaflet
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import { validateEventFormData } from "../api/validateEventFormData.ts";
+import { reverseGeocode } from "../api/reverseGeoCode.ts";
 const EventForm = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [isValidatingAddress, setIsValidatingAddress] = useState(false);
-  const [formData, setFormData] = useState({
+  // Stan przechowujący aktualną pozycję markera (domyślnie ustawiamy na przykładowe współrzędne)
+  const [mapPosition, setMapPosition] = useState({ lat: 51.505, lng: -0.09 });
+
+  const [formEventData, setFormData] = useState({
     e_event_name: "",
     e_start_date: "",
     e_end_date: "",
@@ -23,50 +33,103 @@ const EventForm = () => {
     e_end_time: "",
   });
 
+  // Konfigurujemy ikonę (domyślna ikona Leaflet może nie być poprawnie załadowana przy bundlerach)
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+    iconUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+    shadowUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  });
   const formatDateTime = (date, time) => {
     if (!date || !time) return "";
     return `${date}T${time}:00`; // Pozostaje w lokalnym czasie
   };
-  
-  
-  
-  
+
+  useEffect(() => {
+    const { e_street, e_city, e_zip_code, e_country } = formEventData;
+    if (
+      e_street.trim() &&
+      e_city.trim() &&
+      e_zip_code.trim() &&
+      e_country.trim()
+    ) {
+      (async () => {
+        const geo = await validateAddress(
+          e_street,
+          e_city,
+          e_zip_code,
+          e_country
+        );
+        if (geo) {
+          setMapPosition(geo);
+          setFormData((prev) => ({
+            ...prev,
+            e_latitude: geo.lat.toString(),
+            e_longitude: geo.lng.toString(),
+          }));
+        }
+      })();
+    }
+  }, [
+    formEventData.e_street,
+    formEventData.e_city,
+    formEventData.e_zip_code,
+    formEventData.e_country,
+  ]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
+
     setFormData((prev) => {
       let newFormData = { ...prev, [name]: value };
-  
+
       if (["e_start_date", "e_start_time"].includes(name)) {
-        newFormData.e_start_date = formatDateTime(newFormData.e_start_date, newFormData.e_start_time);
+        newFormData.e_start_date = formatDateTime(
+          newFormData.e_start_date,
+          newFormData.e_start_time
+        );
       }
-  
+
       if (["e_end_date", "e_end_time"].includes(name)) {
-        newFormData.e_end_date = formatDateTime(newFormData.e_end_date, newFormData.e_end_time);
+        newFormData.e_end_date = formatDateTime(
+          newFormData.e_end_date,
+          newFormData.e_end_time
+        );
       }
-  
+
       return newFormData;
     });
-  
+
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
-  
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) return;
+    
+    // Używamy funkcji walidacyjnej, aby sprawdzić, czy wszystkie wymagane pola (w tym adres) są uzupełnione
+  const errorsObj = validateEventFormData(formEventData);
+  if (Object.keys(errorsObj).length > 0) {
+    setErrors(errorsObj);
+    return;
+  }
+  setErrors({});
+  
 
     setIsValidatingAddress(true);
-    const isAddressValid = await validateAddress(
-      formData.e_street,
-      formData.e_city,
-      formData.e_zip_code,
-      formData.e_country
+    // Geokodujemy adres – pobieramy współrzędne
+    const geo = await validateAddress(
+      formEventData.e_street,
+      formEventData.e_city,
+      formEventData.e_zip_code,
+      formEventData.e_country
     );
     setIsValidatingAddress(false);
 
-    if (!isAddressValid) {
+    if (!geo) {
       setErrors((prev) => ({
         ...prev,
         e_street: "Invalid address. Please check your details.",
@@ -74,7 +137,15 @@ const EventForm = () => {
       return;
     }
 
-    console.log("Form Data:", formData);
+    // Uaktualniamy pola latitude i longitude oraz pozycję markera
+    setFormData((prev) => ({
+      ...prev,
+      e_latitude: geo.lat.toString(),
+      e_longitude: geo.lng.toString(),
+    }));
+    setMapPosition(geo);
+
+    console.log("Form Data:", formEventData);
     navigate("/event-ticket-form");
   };
 
@@ -82,118 +153,6 @@ const EventForm = () => {
     navigate("/event-ticket-form");
   };
 
-  const validate = () => {
-    let newErrors = {};
-    const now = new Date();
-    now.setSeconds(0, 0); // Usunięcie sekund dla precyzyjnej walidacji
-
-
-    if (!formData.e_event_name.trim()) {
-      newErrors.e_event_name = "Event name is required";
-    } else if (formData.e_event_name.trim().length > 100) {
-      newErrors.e_event_name = "Event name must not exceed 100 characters";
-    }
-    
-    if (!formData.e_short_descryp.trim())
-      newErrors.e_short_descryp = "Short description is required";
-    if (!formData.e_long_descryp.trim())
-      newErrors.e_long_descryp = "Long description is required";
-    if (!formData.e_image_url.trim())
-      newErrors.e_image_url = "Image URL is required";
-
-    if(!formData.e_street.trim()){
-        newErrors.e_street = "Street is required";
-    }
-    if (!formData.e_apartment_number.trim()) {
-      newErrors.e_apartment_number = "Apartment number is required";
-    } else if (!/^\d+(\/\d+)?$/.test(formData.e_apartment_number.trim())) {
-      newErrors.e_apartment_number =
-        "Invalid apartment number format (e.g. 12/2)";
-    }
-
-    if (!formData.e_zip_code.trim()) {
-      newErrors.e_zip_code = "Zip code is required";
-    } else if (!/^\d{2}-\d{3}$/.test(formData.e_zip_code)) {
-      newErrors.e_zip_code = "Invalid zip code format (XX-XXX)";
-    }
-
-    if (!formData.e_city.trim()) {
-      newErrors.e_city = "City is required";
-    } else if (!/^[A-Za-z\s-]+$/.test(formData.e_city.trim())) {
-      newErrors.e_city = "City can only contain letters, spaces, and hyphens";
-    } else if (formData.e_city.trim().length > 50) {
-      newErrors.e_city = "City must not exceed 50 characters";
-    }
-
-    if (!formData.e_country.trim()) {
-      newErrors.e_country = "Country is required";
-    } else if (!/^[A-Za-z\s-]+$/.test(formData.e_country.trim())) {
-      newErrors.e_country =
-        "Country can only contain letters, spaces, and hyphens";
-    } else if (formData.e_country.trim().length > 50) {
-      newErrors.e_country = "Country must not exceed 50 characters";
-    }
-
-    if (!formData.e_latitude.trim())
-      newErrors.e_latitude = "Latitude is required";
-    if (!formData.e_longitude.trim())
-      newErrors.e_longitude = "Longitude is required";
-
-    // === Walidacja daty i czasu ===
-    // Sprawdzamy, czy pola nie są puste (w wyniku łączenia daty i czasu)
-    if (!formData.e_start_date) {
-        newErrors.e_start_date = "Start date and time is required";
-      }
-      if (!formData.e_end_date) {
-        newErrors.e_end_date = "End date and time is required";
-      }
-  
-      // Jeśli oba pola zostały wypełnione, wykonujemy dalsze sprawdzenia
-      if (formData.e_start_date && formData.e_end_date) {
-        const startDate = new Date(formData.e_start_date);
-        const endDate = new Date(formData.e_end_date);
-  
-        // Data/czas rozpoczęcia nie może być w przeszłości
-        if (startDate < now) {
-          newErrors.e_start_date = "Start date/time cannot be in the past";
-        }
-  
-        // Data/czas zakończenia nie może być w przeszłości
-        if (endDate < now) {
-          newErrors.e_end_date = "End date/time cannot be in the past";
-        }
-  
-        // Czas rozpoczęcia nie może być taki sam jak zakończenia
-        // (oraz data zakończenia musi być późniejsza od daty rozpoczęcia)
-        if (endDate <= startDate) {
-          newErrors.e_end_date = "End date/time must be later than start date/time";
-        }
-  
-        // Sprawdzamy, czy czas trwania wynosi co najmniej 1 godzinę
-        const durationMs = endDate - startDate;
-        if (durationMs < 3600000) {
-          newErrors.e_end_date = "Event duration must be at least 1 hour";
-        }
-  
-        // Sprawdzamy, czy zakres dat nie przekracza 2 tygodni (14 dni)
-        if (durationMs > 1209600000) {
-          newErrors.e_end_date = "Event duration cannot exceed 2 weeks";
-        }
-      }
-      // ================================
-   
-  
-
-  // Jeśli któreś z wymaganych pól jest puste, przerwij dalszą walidację
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    return false;
-  }
-
-  
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
       <h1 className="text-2xl font-bold mb-4">Complete your event data:</h1>
@@ -228,7 +187,7 @@ const EventForm = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
-             {errors.e_start_date && (
+            {errors.e_start_date && (
               <p className="text-red-500 text-sm">{errors.e_start_date}</p>
             )}
           </div>
@@ -243,7 +202,6 @@ const EventForm = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
-            
           </div>
         </div>
 
@@ -259,7 +217,7 @@ const EventForm = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
-             {errors.e_end_date && (
+            {errors.e_end_date && (
               <p className="text-red-500 text-sm">{errors.e_end_date}</p>
             )}
           </div>
@@ -273,9 +231,7 @@ const EventForm = () => {
               name="e_end_time"
               onChange={handleChange}
               className="w-full p-2 border rounded"
-              
             />
-            
           </div>
         </div>
 
@@ -340,6 +296,7 @@ const EventForm = () => {
               type="text"
               id="e_street"
               name="e_street"
+              value={formEventData.e_street}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               placeholder="123 Main St."
@@ -356,6 +313,7 @@ const EventForm = () => {
               type="text"
               id="e_apartment_number"
               name="e_apartment_number"
+              value={formEventData.e_apartment_number}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               placeholder="23/4"
@@ -377,6 +335,7 @@ const EventForm = () => {
               type="text"
               id="e_zip_code"
               name="e_zip_code"
+              value={formEventData.e_zip_code}
               onChange={handleChange}
               className={`w-full p-2 border rounded ${
                 errors.e_zip_code && "border-red-500"
@@ -395,6 +354,7 @@ const EventForm = () => {
               type="text"
               id="e_city"
               name="e_city"
+              value={formEventData.e_city}
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
@@ -410,6 +370,7 @@ const EventForm = () => {
               type="text"
               id="e_country"
               name="e_country"
+              value={formEventData.e_country}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               placeholder="PL"
@@ -429,6 +390,7 @@ const EventForm = () => {
               type="text"
               id="e_latitude"
               name="e_latitude"
+              value={formEventData.e_latitude}
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
@@ -444,6 +406,7 @@ const EventForm = () => {
               type="text"
               id="e_longitude"
               name="e_longitude"
+              value={formEventData.e_longitude}
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
@@ -453,14 +416,54 @@ const EventForm = () => {
           </div>
         </div>
 
-        <button
+        
+      </form>
+
+      <h2 className="text-xl font-semibold mb-2">
+        Select your location on the map:
+      </h2>
+      <MapContainer
+        center={mapPosition}
+        zoom={13}
+        style={{ height: "400px", width: "100%" }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapPicker
+          position={mapPosition}
+          onPositionChange={async (newPos) => {
+            setMapPosition(newPos);
+            // Uaktualniamy tylko pola współrzędnych
+            setFormData((prev) => ({
+              ...prev,
+              e_latitude: newPos.lat.toString(),
+              e_longitude: newPos.lng.toString(),
+            }));
+            // Wywołujemy reverse geocoding, aby uaktualnić pola adresowe
+            const revAddress = await reverseGeocode(newPos.lat, newPos.lng);
+            if (revAddress) {
+              setFormData((prev) => ({
+                ...prev,
+                e_street: revAddress.e_street || prev.e_street,
+                e_zip_code: revAddress.e_zip_code || prev.e_zip_code,
+                e_city: revAddress.e_city || prev.e_city,
+                e_country: revAddress.e_country || prev.e_country,
+              }));
+            }
+          }}
+        />
+      </MapContainer>
+
+      <button
           type="submit"
+          onClick={handleSubmit}
           className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
           disabled={isValidatingAddress}
         >
           {isValidatingAddress ? "Validating Address..." : "Next"}
         </button>
-      </form>
     </div>
   );
 };
