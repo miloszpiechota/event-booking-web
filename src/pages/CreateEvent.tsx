@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateAddress } from "../api/validateAddress.ts";
+import { validateOrganizerFormData } from "../api/validateOrganizerFormData.ts"
 const CreateEvent = () => {
   const navigate = useNavigate();
   const [formOrganizerData, setFormData] = useState({
@@ -20,77 +21,7 @@ const CreateEvent = () => {
 
   const [errors, setErrors] = useState({});
 
-  const validate = () => {
-    let newErrors = {};
-
-    if (!formOrganizerData.u_first_name.trim()) {
-        newErrors.u_first_name = "First name is required";
-      } else if (formOrganizerData.u_first_name.trim().length > 50) {
-        newErrors.u_first_name = "First name must not exceed 50 characters";
-      }
-      
-      if (!formOrganizerData.u_last_name.trim()) {
-        newErrors.u_last_name = "Last name is required";
-      } else if (formOrganizerData.u_last_name.trim().length > 50) {
-        newErrors.u_last_name = "Last name must not exceed 50 characters";
-      }
-      
-    if (!/^\d{9,15}$/.test(formOrganizerData.u_contact_phone)) newErrors.u_contact_phone = "Invalid phone number";
-    if (!/^\S+@\S+\.\S+$/.test(formOrganizerData.u_contact_email)) newErrors.u_contact_email = "Invalid email format";
-    if (formOrganizerData.u_apartment_number.trim() && !/^\d+(\/\d+)?$/.test(formOrganizerData.u_apartment_number.trim())) {
-        newErrors.u_apartment_number = "Apartment number must be a simple number (e.g., 23) or in the format 'apartment building number/flat number' (e.g., 23/4)";
-      }
-      
-    if (!formOrganizerData.u_street.trim()) {
-        newErrors.u_street = "Street is required";
-      } else if (formOrganizerData.u_street.trim().length > 100) {
-        newErrors.u_street = "Street must not exceed 100 characters";
-      }
-    //   } else if (!/^[A-Za-z0-9\s.,'-]+$/.test(formData.u_street.trim())) {
-    //     newErrors.u_street = "Street contains invalid characters. Only letters, numbers, spaces, commas, periods, hyphens, and apostrophes are allowed.";
-    //   }
-      
-      
-      if (!formOrganizerData.u_city.trim()) {
-        newErrors.u_city = "City is required";
-      } else if (!/^[A-Za-z\s-]+$/.test(formOrganizerData.u_city.trim())) {
-        newErrors.u_city = "City can only contain letters, spaces, and hyphens";
-      } else if (formOrganizerData.u_city.trim().length > 50) {
-        newErrors.u_city = "City must not exceed 50 characters";
-      }
-      
-      if (!formOrganizerData.u_country.trim()) {
-        newErrors.u_country = "Country is required";
-      } else if (!/^[A-Za-z\s-]+$/.test(formOrganizerData.u_country.trim())) {
-        newErrors.u_country = "Country can only contain letters, spaces, and hyphens";
-      } else if (formOrganizerData.u_country.trim().length > 50) {
-        newErrors.u_country = "Country must not exceed 50 characters";
-      }
-      
-    if (!/^\d{2}-\d{3}$/.test(formOrganizerData.u_zip_code))newErrors.u_zip_code = "Invalid zip code (XX-XXX)";
-    // Validate birth date and check if user is at least 18 years old
-    if (!formOrganizerData.u_birth_date) {
-      newErrors.u_birth_date = "Date of birth is required";
-    } else {
-      const birthDate = new Date(formOrganizerData.u_birth_date);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDifference = today.getMonth() - birthDate.getMonth();
-
-      if (
-        monthDifference < 0 ||
-        (monthDifference === 0 && today.getDate() < birthDate.getDate())
-      ) {
-        age--;
-      }
-
-      if (age < 18) {
-        newErrors.u_birth_date = "You must be at least 18 years old";
-      }
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  
 
   const handleChange = (e) => {
     setFormData({ ...formOrganizerData, [e.target.name]: e.target.value });
@@ -99,18 +30,21 @@ const CreateEvent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validate()) return;
-
-    setIsValidatingAddress(true); // Włączamy stan ładowania walidacji adresu
+  
+    const newErrors = validateOrganizerFormData(formOrganizerData);
+    setErrors(newErrors);
+  
+    if (Object.keys(newErrors).length > 0) return;
+  
+    setIsValidatingAddress(true);
     const isAddressValid = await validateAddress(
       formOrganizerData.u_street,
       formOrganizerData.u_city,
       formOrganizerData.u_zip_code,
       formOrganizerData.u_country
     );
-    setIsValidatingAddress(false); // Wyłączamy stan ładowania
-
+    setIsValidatingAddress(false);
+  
     if (!isAddressValid) {
       setErrors((prev) => ({
         ...prev,
@@ -118,9 +52,9 @@ const CreateEvent = () => {
       }));
       return;
     }
-
+  
     console.log("Form Data:", formOrganizerData);
-    navigate("/event-form", { state: { formOrganizerData } }); // Przekazanie danych do EventForm
+    navigate("/event-form", { state: { formOrganizerData } });
   };
 
   return (
@@ -138,7 +72,7 @@ const CreateEvent = () => {
               type="text"
               id="u_first_name"
               name="u_first_name"
-                placeholder="John"
+              placeholder="John"
               onChange={handleChange}
               className={`w-full p-2 border rounded ${
                 errors.u_first_name && "border-red-500"
@@ -178,7 +112,6 @@ const CreateEvent = () => {
             id="u_birth_date"
             name="u_birth_date"
             onChange={handleChange}
-            
             className={`w-full p-2 border rounded ${
               errors.u_birth_date && "border-red-500"
             }`}
@@ -198,7 +131,6 @@ const CreateEvent = () => {
               id="u_contact_phone"
               name="u_contact_phone"
               onChange={handleChange}
-              
               className={`w-full p-2 border rounded ${
                 errors.u_contact_phone && "border-red-500"
               }`}
@@ -217,7 +149,6 @@ const CreateEvent = () => {
               id="u_contact_email"
               name="u_contact_email"
               onChange={handleChange}
-              
               className={`w-full p-2 border rounded ${
                 errors.u_contact_email && "border-red-500"
               }`}
@@ -227,6 +158,24 @@ const CreateEvent = () => {
             )}
           </div>
         </div>
+        <div>
+            <label htmlFor="u_contact_info" className="block font-semibold">
+              Contact info:
+            </label>
+            <input
+              type="text"
+              id="u_contact_info"
+              name="u_contact_info"
+              onChange={handleChange}
+              className={`w-full p-2 border rounded ${
+                errors.u_contact_info && "border-red-500"
+              }`}
+            />
+            {errors.u_contact_info && (
+              <p className="text-red-500 text-sm">{errors.u_contact_info}</p>
+            )}
+          </div>
+
 
         <h2 className="text-xl font-semibold mt-6">Organizer Address</h2>
 
@@ -262,6 +211,9 @@ const CreateEvent = () => {
               placeholder="23/4"
               className="w-full p-2 border rounded"
             />
+            {errors.u_apartment_number && (
+              <p className="text-red-500 text-sm">{errors.u_apartment_number}</p>
+            )}
           </div>
         </div>
 
@@ -275,7 +227,7 @@ const CreateEvent = () => {
               id="u_zip_code"
               name="u_zip_code"
               onChange={handleChange}
-                placeholder="XX-XXX"
+              placeholder="XX-XXX"
               className={`w-full p-2 border rounded ${
                 errors.u_zip_code && "border-red-500"
               }`}
@@ -312,9 +264,7 @@ const CreateEvent = () => {
               id="u_country"
               name="u_country"
               onChange={handleChange}
-              className={`w-full p-2 border rounded ${
-                errors.u_zip_code && "border-red-500"
-              }`}
+              placeholder="PL"
               className={`w-full p-2 border rounded ${
                 errors.u_country && "border-red-500"
               }`}

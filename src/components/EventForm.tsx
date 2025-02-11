@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { validateAddress } from "../api/validateAddress.ts";
 import MapPicker from "./MapPicker.tsx";
 // Importujemy komponenty z react-leaflet
@@ -14,10 +14,10 @@ const EventForm = () => {
   const [isValidatingAddress, setIsValidatingAddress] = useState(false);
   // Stan przechowujący aktualną pozycję markera (domyślnie ustawiamy na przykładowe współrzędne)
   const [mapPosition, setMapPosition] = useState({ lat: 51.505, lng: -0.09 });
-
+    const {formOrganizerData} = useLocation().state || {};
   const [formEventData, setFormData] = useState({
     e_event_name: "",
-    e_start_date: "",
+    e_start_date: "",   
     e_end_date: "",
     e_short_descryp: "",
     e_long_descryp: "",
@@ -146,7 +146,7 @@ const EventForm = () => {
     setMapPosition(geo);
 
     console.log("Form Data:", formEventData);
-    navigate("/event-ticket-form");
+    navigate("/event-ticket-form",{ state: { formEventData,formOrganizerData } });
   };
 
   const handleOnClick = () => {
