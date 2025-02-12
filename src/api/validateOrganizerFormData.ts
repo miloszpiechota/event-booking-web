@@ -10,7 +10,7 @@ export const validateOrganizerFormData = (formOrganizerData) => {
     }
 
     if (formOrganizerData.u_first_name.trim().length > 100) {
-        newErrors.u_contact_info = "Contact info must not exceed 50 characters";
+        newErrors.u_contact_info = "Contact info must not exceed 100 characters";
       }
   
     if (!formOrganizerData.u_last_name.trim()) {

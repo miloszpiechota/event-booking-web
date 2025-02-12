@@ -264,7 +264,7 @@ const CreateEvent = () => {
               id="u_country"
               name="u_country"
               onChange={handleChange}
-              placeholder="PL"
+              
               className={`w-full p-2 border rounded ${
                 errors.u_country && "border-red-500"
               }`}
