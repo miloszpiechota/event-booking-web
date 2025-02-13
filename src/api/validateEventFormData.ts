@@ -30,10 +30,12 @@ export const validateEventFormData = (data) => {
       errors.e_apartment_number = "Invalid apartment number format (e.g. 12/2)";
     }
     if (!data.e_zip_code.trim()) {
-      errors.e_zip_code = "Zip code is required";
-    } else if (!/^\d{2}-\d{3}$/.test(data.e_zip_code)) {
-      errors.e_zip_code = "Invalid zip code format (XX-XXX)";
-    }
+        errors.e_zip_code = "Zip code is required";
+      } else if (!/^[A-Za-z0-9 ]+$/.test(data.e_zip_code)) {
+        errors.e_zip_code = "Invalid zip code format (only letters, digits and spaces allowed)";
+      }
+      
+      
     if (!data.e_city.trim()) {
       errors.e_city = "City is required";
     } else if (!/^[A-Za-z\s-]+$/.test(data.e_city.trim())) {
@@ -55,35 +57,81 @@ export const validateEventFormData = (data) => {
     if (!data.e_longitude.trim())
       errors.e_longitude = "Longitude is required";
   
-    // Walidacja daty i czasu
-    if (!data.e_start_date) {
-      errors.e_start_date = "Start date and time is required";
-    }
-    if (!data.e_end_date) {
-      errors.e_end_date = "End date and time is required";
-    }
-    if (data.e_start_date && data.e_end_date) {
-      const startDate = new Date(data.e_start_date);
-      const endDate = new Date(data.e_end_date);
+    // Sprawdzenie, czy podano datę i godzinę rozpoczęcia oraz zakończenia
+  if (!data.e_start_date || !data.e_start_time) {
+    errors.e_start_date = "Start date and time are required.";
+  }
+  if (!data.e_end_date || !data.e_end_time) {
+    errors.e_end_date = "End date and time are required.";
+  }
+
+  // Jeśli brakuje dat/godzin, zwracamy błędy
+  if (errors.e_start_date || errors.e_end_date) {
+    return errors;
+  }
+
+  // Tworzymy obiekty Date na podstawie daty i czasu
+  const startDateTime = new Date(`${data.e_start_date}T${data.e_start_time}`);
+  const endDateTime = new Date(`${data.e_end_date}T${data.e_end_time}`);
   
-      if (startDate < now) {
-        errors.e_start_date = "Start date/time cannot be in the past";
-      }
-      if (endDate < now) {
-        errors.e_end_date = "End date/time cannot be in the past";
-      }
-      if (endDate <= startDate) {
-        errors.e_end_date =
-          "End date/time must be later than start date/time";
-      }
-      const durationMs = endDate - startDate;
-      if (durationMs < 3600000) {
-        errors.e_end_date = "Event duration must be at least 1 hour";
-      }
-      if (durationMs > 1209600000) {
-        errors.e_end_date = "Event duration cannot exceed 2 weeks";
-      }
-    }
+
+  // Sprawdzenie, czy daty zostały poprawnie sparsowane
+  if (isNaN(startDateTime.getTime())) {
+    errors.e_start_date = "Invalid start date/time format.";
+  }
+  if (isNaN(endDateTime.getTime())) {
+    errors.e_end_date = "Invalid end date/time format.";
+  }
+  if (errors.e_start_date || errors.e_end_date) {
+    return errors;
+  }
+
+  // 1. Data rozpoczęcia i zakończenia nie mogą być w przeszłości
+  if (startDateTime < now) {
+    errors.e_start_date = "Start date/time cannot be in the past.";
+  }
+  if (endDateTime < now) {
+    errors.e_end_date = "End date/time cannot be in the past.";
+  }
+
+  // 2. Data rozpoczęcia i zakończenia nie mogą być takie same
+  if (startDateTime.getTime() === endDateTime.getTime()) {
+    errors.e_end_date = "Start and end date/time cannot be the same.";
+  }
+
+  // 3. Wydarzenie musi rozpocząć się i zakończyć najwcześniej 1 dzień (24h) od teraz
+  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  if (startDateTime < tomorrow) {
+    errors.e_start_date = "Event must start at least 1 day from now.";
+  }
+  if (endDateTime < tomorrow) {
+    errors.e_end_date = "Event must end at least 1 day from now.";
+  }
+
+  // 4. Data zakończenia musi być po dacie rozpoczęcia
+  if (endDateTime <= startDateTime) {
+    errors.e_end_date = "End date/time must be after start date/time.";
+  }
+
+  // 5. Czas trwania wydarzenia: min 1 godzina, max 2 tygodnie
+  const durationMs = endDateTime.getTime() - startDateTime.getTime();
+  const oneHour = 60 * 60 * 1000;
+  const twoWeeks = 14 * 24 * 60 * 60 * 1000;
+  if (durationMs < oneHour) {
+    errors.e_end_date = "Event duration must be at least 1 hour.";
+  }
+  if (durationMs > twoWeeks) {
+    errors.e_end_date = "Event duration cannot exceed 2 weeks.";
+  }
+
+  // 6. Data wydarzenia nie może być odległa o więcej niż 1 rok od teraz
+  const oneYearFromNow = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+  if (startDateTime > oneYearFromNow) {
+    errors.e_start_date = "Event start date cannot be more than 1 year from now.";
+  }
+  if (endDateTime > oneYearFromNow) {
+    errors.e_end_date = "Event end date cannot be more than 1 year from now.";
+  }
   
     return errors;
   };

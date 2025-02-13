@@ -5,51 +5,27 @@ import MapPicker from "./MapPicker.tsx";
 // Importujemy komponenty z react-leaflet
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+
 import { validateEventFormData } from "../api/validateEventFormData.ts";
 import { reverseGeocode } from "../api/reverseGeoCode.ts";
+import { useFormData } from "../../context/FormDataContext.tsx";
 const EventForm = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [isValidatingAddress, setIsValidatingAddress] = useState(false);
   // Stan przechowujący aktualną pozycję markera (domyślnie ustawiamy na przykładowe współrzędne)
   const [mapPosition, setMapPosition] = useState({ lat: 51.505, lng: -0.09 });
-    const {formOrganizerData} = useLocation().state || {};
-  const [formEventData, setFormData] = useState({
-    e_event_name: "",
-    e_start_date: "",   
-    e_end_date: "",
-    e_short_descryp: "",
-    e_long_descryp: "",
-    e_image_url: "",
-    e_street: "",
-    e_apartment_number: "",
-    e_zip_code: "",
-    e_city: "",
-    e_country: "",
-    e_latitude: "",
-    e_longitude: "",
-    e_start_time: "",
-    e_end_time: "",
-  });
+ 
 
-  // Konfigurujemy ikonę (domyślna ikona Leaflet może nie być poprawnie załadowana przy bundlerach)
-  delete L.Icon.Default.prototype._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl:
-      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-    iconUrl:
-      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-    shadowUrl:
-      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-  });
+  const { eventData, setEventData } = useFormData();
+
   const formatDateTime = (date, time) => {
     if (!date || !time) return "";
     return `${date}T${time}:00`; // Pozostaje w lokalnym czasie
   };
 
   useEffect(() => {
-    const { e_street, e_city, e_zip_code, e_country } = formEventData;
+    const { e_street, e_city, e_zip_code, e_country } = eventData;
     if (
       e_street.trim() &&
       e_city.trim() &&
@@ -65,7 +41,7 @@ const EventForm = () => {
         );
         if (geo) {
           setMapPosition(geo);
-          setFormData((prev) => ({
+          setEventData((prev) => ({
             ...prev,
             e_latitude: geo.lat.toString(),
             e_longitude: geo.lng.toString(),
@@ -74,58 +50,35 @@ const EventForm = () => {
       })();
     }
   }, [
-    formEventData.e_street,
-    formEventData.e_city,
-    formEventData.e_zip_code,
-    formEventData.e_country,
+    eventData.e_street,
+    eventData.e_city,
+    eventData.e_zip_code,
+    eventData.e_country,
   ]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => {
-      let newFormData = { ...prev, [name]: value };
-
-      if (["e_start_date", "e_start_time"].includes(name)) {
-        newFormData.e_start_date = formatDateTime(
-          newFormData.e_start_date,
-          newFormData.e_start_time
-        );
-      }
-
-      if (["e_end_date", "e_end_time"].includes(name)) {
-        newFormData.e_end_date = formatDateTime(
-          newFormData.e_end_date,
-          newFormData.e_end_time
-        );
-      }
-
-      return newFormData;
-    });
-
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEventData({ ...eventData, [e.target.name]: e.target.value });
+    };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    
     // Używamy funkcji walidacyjnej, aby sprawdzić, czy wszystkie wymagane pola (w tym adres) są uzupełnione
-  const errorsObj = validateEventFormData(formEventData);
-  if (Object.keys(errorsObj).length > 0) {
-    setErrors(errorsObj);
-    return;
-  }
-  setErrors({});
-  
+    const errorsObj = validateEventFormData(eventData);
+    if (Object.keys(errorsObj).length > 0) {
+      setErrors(errorsObj);
+      return;
+    }
+    setErrors({});
 
     setIsValidatingAddress(true);
     // Geokodujemy adres – pobieramy współrzędne
     const geo = await validateAddress(
-      formEventData.e_street,
-      formEventData.e_city,
-      formEventData.e_zip_code,
-      formEventData.e_country
+      eventData.e_street,
+      eventData.e_city,
+      eventData.e_zip_code,
+      eventData.e_country
     );
     setIsValidatingAddress(false);
 
@@ -138,20 +91,18 @@ const EventForm = () => {
     }
 
     // Uaktualniamy pola latitude i longitude oraz pozycję markera
-    setFormData((prev) => ({
+    setEventData((prev) => ({
       ...prev,
       e_latitude: geo.lat.toString(),
       e_longitude: geo.lng.toString(),
     }));
     setMapPosition(geo);
 
-    console.log("Form Data:", formEventData);
-    navigate("/event-ticket-form",{ state: { formEventData,formOrganizerData } });
-  };
-
-  const handleOnClick = () => {
+    console.log("Form Data:", eventData);
     navigate("/event-ticket-form");
   };
+
+  
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
@@ -167,6 +118,7 @@ const EventForm = () => {
             id="e_event_name"
             name="e_event_name"
             onChange={handleChange}
+            value={eventData.e_event_name}
             className="w-full p-2 border rounded"
             placeholder="Enter event name"
           />
@@ -185,6 +137,7 @@ const EventForm = () => {
               id="e_start_date"
               name="e_start_date"
               onChange={handleChange}
+              value={eventData.e_start_date}
               className="w-full p-2 border rounded"
             />
             {errors.e_start_date && (
@@ -200,6 +153,7 @@ const EventForm = () => {
               id="e_start_time"
               name="e_start_time"
               onChange={handleChange}
+              value={eventData.e_start_time}
               className="w-full p-2 border rounded"
             />
           </div>
@@ -215,6 +169,7 @@ const EventForm = () => {
               id="e_end_date"
               name="e_end_date"
               onChange={handleChange}
+              value={eventData.e_end_date}
               className="w-full p-2 border rounded"
             />
             {errors.e_end_date && (
@@ -230,6 +185,7 @@ const EventForm = () => {
               id="e_end_time"
               name="e_end_time"
               onChange={handleChange}
+              value={eventData.e_end_time}
               className="w-full p-2 border rounded"
             />
           </div>
@@ -244,6 +200,7 @@ const EventForm = () => {
             id="e_short_descryp"
             name="e_short_descryp"
             onChange={handleChange}
+            value={eventData.e_short_descryp}
             className="w-full p-2 border rounded"
             placeholder="Enter short description max 100 characters"
           />
@@ -261,6 +218,7 @@ const EventForm = () => {
             id="e_long_descryp"
             name="e_long_descryp"
             onChange={handleChange}
+            value={eventData.e_long_descryp}
             className="w-full p-2 border rounded"
             placeholder="Enter long description max 500 characters"
           />
@@ -278,6 +236,7 @@ const EventForm = () => {
             id="e_image_url"
             name="e_image_url"
             onChange={handleChange}
+            value={eventData.e_image_url}
             className="w-full p-2 border rounded"
           />
           {errors.e_image_url && (
@@ -296,7 +255,7 @@ const EventForm = () => {
               type="text"
               id="e_street"
               name="e_street"
-              value={formEventData.e_street}
+              value={eventData.e_street}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               placeholder="123 Main St."
@@ -313,7 +272,7 @@ const EventForm = () => {
               type="text"
               id="e_apartment_number"
               name="e_apartment_number"
-              value={formEventData.e_apartment_number}
+              value={eventData.e_apartment_number}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               placeholder="23/4"
@@ -335,7 +294,7 @@ const EventForm = () => {
               type="text"
               id="e_zip_code"
               name="e_zip_code"
-              value={formEventData.e_zip_code}
+              value={eventData.e_zip_code}
               onChange={handleChange}
               className={`w-full p-2 border rounded ${
                 errors.e_zip_code && "border-red-500"
@@ -354,7 +313,7 @@ const EventForm = () => {
               type="text"
               id="e_city"
               name="e_city"
-              value={formEventData.e_city}
+              value={eventData.e_city}
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
@@ -370,7 +329,7 @@ const EventForm = () => {
               type="text"
               id="e_country"
               name="e_country"
-              value={formEventData.e_country}
+              value={eventData.e_country}
               onChange={handleChange}
               className="w-full p-2 border rounded"
               placeholder="PL"
@@ -390,7 +349,7 @@ const EventForm = () => {
               type="text"
               id="e_latitude"
               name="e_latitude"
-              value={formEventData.e_latitude}
+              value={eventData.e_latitude}
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
@@ -406,7 +365,7 @@ const EventForm = () => {
               type="text"
               id="e_longitude"
               name="e_longitude"
-              value={formEventData.e_longitude}
+              value={eventData.e_longitude}
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
@@ -415,8 +374,6 @@ const EventForm = () => {
             )}
           </div>
         </div>
-
-        
       </form>
 
       <h2 className="text-xl font-semibold mb-2">
@@ -436,7 +393,7 @@ const EventForm = () => {
           onPositionChange={async (newPos) => {
             setMapPosition(newPos);
             // Uaktualniamy tylko pola współrzędnych
-            setFormData((prev) => ({
+            setEventData((prev) => ({
               ...prev,
               e_latitude: newPos.lat.toString(),
               e_longitude: newPos.lng.toString(),
@@ -444,7 +401,7 @@ const EventForm = () => {
             // Wywołujemy reverse geocoding, aby uaktualnić pola adresowe
             const revAddress = await reverseGeocode(newPos.lat, newPos.lng);
             if (revAddress) {
-              setFormData((prev) => ({
+              setEventData((prev) => ({
                 ...prev,
                 e_street: revAddress.e_street || prev.e_street,
                 e_zip_code: revAddress.e_zip_code || prev.e_zip_code,
@@ -457,13 +414,19 @@ const EventForm = () => {
       </MapContainer>
 
       <button
-          type="submit"
-          onClick={handleSubmit}
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-          disabled={isValidatingAddress}
-        >
-          {isValidatingAddress ? "Validating Address..." : "Next"}
-        </button>
+        type="submit"
+        onClick={handleSubmit}
+        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+        disabled={isValidatingAddress}
+      >
+        {isValidatingAddress ? "Validating Address..." : "Next"}
+      </button>
+      <button
+        onClick={() => navigate(-1)}
+        className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition"
+      >
+        Back
+      </button>
     </div>
   );
 };
