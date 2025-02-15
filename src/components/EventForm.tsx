@@ -5,7 +5,7 @@ import MapPicker from "./MapPicker.tsx";
 // Importujemy komponenty z react-leaflet
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-
+import { fetchEventCategory } from "../api/fetchEventCategory.ts";
 import { validateEventFormData } from "../api/validateEventFormData.ts";
 import { reverseGeocode } from "../api/reverseGeoCode.ts";
 import { useFormData } from "../../context/FormDataContext.tsx";
@@ -15,14 +15,16 @@ const EventForm = () => {
   const [isValidatingAddress, setIsValidatingAddress] = useState(false);
   // Stan przechowujący aktualną pozycję markera (domyślnie ustawiamy na przykładowe współrzędne)
   const [mapPosition, setMapPosition] = useState({ lat: 51.505, lng: -0.09 });
- 
+  const [categories, setCategories] = useState([]);
 
   const { eventData, setEventData } = useFormData();
-
-  const formatDateTime = (date, time) => {
-    if (!date || !time) return "";
-    return `${date}T${time}:00`; // Pozostaje w lokalnym czasie
-  };
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const data = await fetchEventCategory();
+      setCategories(data);
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const { e_street, e_city, e_zip_code, e_country } = eventData;
@@ -57,8 +59,20 @@ const EventForm = () => {
   ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setEventData({ ...eventData, [e.target.name]: e.target.value });
-    };
+    setEventData({ ...eventData, [e.target.name]: e.target.value });
+  };
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategoryId = e.target.value;
+    const selectedCategory = categories.find(
+      (cat) => String(cat.id) === selectedCategoryId // Zapewnia porównanie string do string
+    );
+  
+    setEventData((prev) => ({
+      ...prev,
+      e_event_category_id: selectedCategoryId,
+      e_event_category_name: selectedCategory ? selectedCategory.name : "",
+    }));
+  };
   
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,31 +116,54 @@ const EventForm = () => {
     navigate("/event-ticket-form");
   };
 
-  
-
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
       <h1 className="text-2xl font-bold mb-4">Complete your event data:</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <h2 className="text-xl font-semibold mt-6">Event Data:</h2>
-        <div>
-          <label htmlFor="e_event_name" className="block font-semibold">
-            Event Name:
-          </label>
-          <input
-            type="text"
-            id="e_event_name"
-            name="e_event_name"
-            onChange={handleChange}
-            value={eventData.e_event_name}
-            className="w-full p-2 border rounded"
-            placeholder="Enter event name"
-          />
-          {errors.e_event_name && (
-            <p className="text-red-500 text-sm">{errors.e_event_name}</p>
-          )}
-        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="e_event_name" className="block font-semibold">
+              Event Name:
+            </label>
+            <input
+              type="text"
+              id="e_event_name"
+              name="e_event_name"
+              onChange={handleChange}
+              value={eventData.e_event_name}
+              className="w-full p-2 border rounded"
+              placeholder="Enter event name"
+            />
+            {errors.e_event_name && (
+              <p className="text-red-500 text-sm">{errors.e_event_name}</p>
+            )}
+          </div>
 
+          <div>
+            <label htmlFor="e_event_category" className="block font-semibold">
+              Event Category:
+            </label>
+            <select
+              id="e_event_category"
+              name="e_event_category_id"
+              onChange={handleCategoryChange}
+              value={eventData.e_event_category_id}
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Select a category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+
+            {errors.e_event_category && (
+              <p className="text-red-500 text-sm">{errors.e_event_category}</p>
+            )}
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="e_start_date" className="block font-semibold">

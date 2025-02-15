@@ -32,6 +32,7 @@ export interface EventData {
   e_longitude: string;
   e_start_time: string;
   e_end_time: string;
+  e_event_category_id: string;
 }
 
 export interface TicketData {
@@ -92,6 +93,8 @@ export const FormDataProvider = ({ children }: { children: ReactNode }) => {
     e_longitude: "",
     e_start_time: "",
     e_end_time: "",
+    e_event_category_id: "",
+    e_event_category_name:"",
   });
 
   const [ticketData, setTicketData] = useState<TicketData>({

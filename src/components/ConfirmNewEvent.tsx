@@ -50,6 +50,10 @@ function ConfirmNewEvent() {
             <strong>Event Name:</strong> {eventData.e_event_name}
           </li>
           <li>
+            <strong>Event Category:</strong> {eventData.e_event_category_name}
+          </li>
+
+          <li>
             <strong>Start Date:</strong> {eventData.e_start_date} (
             {eventData.e_start_time})
           </li>
