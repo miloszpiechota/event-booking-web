@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 // Możesz przekazać nazwę użytkownika jako prop, np. <Header username="Michał" />
 const Header = ({ username = "nazwa uzytkownika" }) => {
   return (
-    <header className="bg-black text-white p-2 shadow-lg">
+    <header className=" text-white p-2 shadow-lg">
       <div className="container mx-auto flex items-center">
         {/* Lewa sekcja: Logo */}
         <div className="flex-1">
-          <h1 className="text-2xl font-bold">My SPA App</h1>
+          <h1 className="text-2xl font-bold">GoEvent SPA</h1>
         </div>
 
         {/* Środkowa sekcja: Nawigacja */}

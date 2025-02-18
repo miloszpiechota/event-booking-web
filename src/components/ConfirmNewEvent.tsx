@@ -168,12 +168,8 @@ function ConfirmNewEvent() {
           </li>
           {ticketData.t_qr_code && (
             <li>
-              <strong>QR Code:</strong>
-              <img
-                src={ticketData.t_qr_code}
-                alt="QR Code"
-                className="block mt-2 mx-auto w-40 h-40"
-              />
+              <strong>QR Code: </strong>
+        {ticketData.t_qr_code}
             </li>
           )}
         </ul>
