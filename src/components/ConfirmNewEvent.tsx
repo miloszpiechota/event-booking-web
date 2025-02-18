@@ -1,12 +1,67 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useFormData } from "../../context/FormDataContext.tsx";
+// Zakładamy, że masz już zdefiniowaną funkcję getUserToken (lub możesz użyć np. supabase.auth.getSession())
+import { supabase } from "../../supabaseClient.ts";
 function ConfirmNewEvent() {
   const navigate = useNavigate();
+  const { eventData, organizerData, ticketData } = useFormData();
+  const getUserToken = async () => {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session) {
+      console.error("User is not logged in or session is missing", error);
+      return null;
+    }
+    return data.session.access_token; // Zwracamy token JWT użytkownika
+  };
+  const createNewEvent = async () => {
+    try {
+      // 1. Pobranie tokena użytkownika
+      const token = await getUserToken(); // Upewnij się, że ta funkcja zwraca token
+      if (!token) {
+        window.alert("User is not authenticated.");
+        return;
+      }
 
-  const { eventData, setEventData } = useFormData();
-  const { organizerData, setOrganizerData } = useFormData();
-  const { ticketData, setTicketData } = useFormData();
+      // 2. Przygotowanie danych do wysłania
+      const requestBody = {
+        eventData,
+        organizerData,
+        ticketData,
+      };
+
+      console.log("Wysyłane dane do API:", JSON.stringify(requestBody, null, 2));
+
+      // 3. Wysłanie żądania POST do endpointu funkcji Supabase
+      const response = await fetch("https://azbpvxuvzjcahzrkwuxk.supabase.co/functions/v1/create-new-event", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      // 4. Parsowanie odpowiedzi
+      const data = await response.json().catch(() => null);
+      console.log("Odpowiedź serwera:", data);
+
+      // 5. Sprawdzenie, czy operacja się powiodła
+      if (!response.ok || !data) {
+        window.alert("Server error. Please try again.");
+        return;
+      }
+
+      // 6. Sukces – komunikat i przekierowanie
+      window.alert("New event created successfully!");
+     // navigate("/events"); // lub inna ścieżka, na którą chcesz przekierować
+
+    } catch (error) {
+      console.error("Create event error:", error);
+      window.alert("Failed to process the new event.");
+    }
+  };
+  
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
       <h1 className="text-2xl font-bold mb-6 text-center">
@@ -133,7 +188,7 @@ function ConfirmNewEvent() {
           Back
         </button>
         <button
-          onClick={() => alert("Event submitted!")}
+          onClick={createNewEvent}
           className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
         >
           Confirm & Submit
