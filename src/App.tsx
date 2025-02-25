@@ -9,8 +9,12 @@ import EventTicketForm from './components/EventTicketForm.tsx';
 import Auth from './pages/Auth.tsx';
 import ConfirmNewEvent from './components/ConfirmNewEvent.tsx';
 import { FormDataProvider } from "../context/FormDataContext.tsx"; // dostosuj ścieżkę
+import { EventProvider } from "../context/EventContext.tsx"; 
+import ShowEvent from './pages/ShowEvent.tsx';
 function App() {
   return (
+
+    <EventProvider>
     <FormDataProvider>
     <Routes>
       <Route path="/auth" element={<Auth />} />
@@ -19,8 +23,10 @@ function App() {
       <Route path="/event-form" element={<EventForm />} />
       <Route path="/event-ticket-form" element={<EventTicketForm />} />
       <Route path="/confirm-new-event" element={<ConfirmNewEvent />} />
+      <Route path="/event/:id" element={<ShowEvent />} />
     </Routes>
     </FormDataProvider>
+    </EventProvider>
     
   )
 }

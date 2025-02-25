@@ -1,0 +1,159 @@
+import React from "react";
+import { useParams } from "react-router-dom";
+import { useEvents } from "../../context/EventContext.tsx";
+import Header from "../components/Header.tsx";
+import { enUS } from "date-fns/locale";
+import { format } from "date-fns";
+const ShowEvent = () => {
+  const { id } = useParams();
+  const { events } = useEvents();
+
+  if (!events?.length) {
+    return (
+      <p className="text-white text-center mt-10">
+        Ładowanie wydarzeń lub brak danych...
+      </p>
+    );
+  }
+
+  const event = events.find((event) => event.id.toString() === id);
+
+  if (!event) {
+    return (
+      <p className="text-white text-center mt-10">
+        Wydarzenie nie zostało znalezione.
+      </p>
+    );
+  }
+
+  const startDate = format(
+    new Date(event.start_date),
+    "EEEE, MMM d, yyyy 'at' HH:mm a",
+    { locale: enUS }
+  );
+
+  const endDate = format(
+    new Date(event.end_date),
+    "EEEE, MMM d, yyyy 'at' HH:mm a",
+    { locale: enUS }
+  );
+
+  return (
+    <div className="bg-gray-100 min-h-screen">
+      <div className="absolute top-0 left-0 w-full z-10">
+        <Header />
+      </div>
+      {/* Sekcja główna */}
+      <div className="relative w-full h-[500px] flex items-center">
+        {/* Tło obrazka */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${event.image_url})` }}
+        >
+          <div className="absolute inset-0 bg-black/50"></div>{" "}
+          {/* Przyciemnienie */}
+        </div>
+
+        {/* Zawartość */}
+        <div className="relative z-10 w-5/6 mx-auto flex flex-col lg:flex-row items-center lg:items-start gap-8">
+          {/* Lewa strona: Opis wydarzenia */}
+          <div className="w-full lg:w-2/3 text-white space-y-4">
+            <button className="text-gray-400 flex items-center space-x-2">
+              ← Back
+            </button>
+            <h1 className="text-4xl font-bold">{event.name}</h1>
+            <p className="text-gray-300">By {event.organizer}</p>
+            <p className="text-gray-400">
+              {event.location.street_name}, {event.location.city_name},
+              {event.location.apartment_number}, {event.location.country_name},{" "}
+              {event.location.zip_code}
+            </p>
+            <button className="text-white underline">View Map</button>
+          </div>
+
+          {/* Prawa strona: Kontener z datą i przyciskami */}
+          <div className="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-lg text-black">
+            <h2 className="text-xl font-semibold">Start Date & Time</h2>
+            <p className="text-gray-600">{startDate}</p>
+            <button className="text-blue-600 mt-2">+ Add to Calendar</button>
+            <h2 className="text-xl font-semibold">
+              Standard Price & VIP Price
+            </h2>
+            <div className="flex gap-2 flex-wrap mt-2">
+            <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
+              {event.event_ticket.ticket_pricing.ticket_price} $
+            </span>
+            <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
+              {event.event_ticket.ticket_pricing.vip_price} $
+            </span>
+            </div>
+            <button className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg mt-4">
+              Book Now
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Opis wydarzenia */}
+      <div className="w-5/6 mx-auto mt-10 flex flex-col lg:flex-row gap-8">
+        {/* Lewa strona */}
+        <div className="w-full lg:w-2/3 space-y-6">
+          <h2 className="text-2xl font-semibold">Description</h2>
+          <p className="text-gray-700">{event.short_description}</p>
+          <p className="text-gray-700">{event.long_description}</p>
+
+          <h3 className="text-xl font-semibold">Start Data & End Date</h3>
+          <p className="text-gray-600">
+            Start Date: <strong>{startDate}</strong>
+          </p>
+          <p className="text-gray-600">
+            End Date: <strong>{endDate}</strong>
+          </p>
+
+          <h3 className="text-xl font-semibold">
+            How can I contact the organizer with any question?
+          </h3>
+          <p className="text-gray-600">
+            Visit{" "}
+            <a
+              href="https://www.dreamworldwide.net"
+              className="text-blue-600 underline"
+            >
+              www.dreamworldwide.net
+            </a>{" "}
+            for more info.
+          </p>
+        </div>
+
+        {/* Prawa strona: Mapa i lokalizacja */}
+        <div className="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-lg">
+          <h2 className="text-xl font-semibold">Event Location</h2>
+          <div className="w-full h-40 bg-gray-300 rounded-lg mb-4"></div>{" "}
+          {/* Placeholder dla mapy */}
+          <p className="text-gray-700">{event.location.full_address}</p>
+        </div>
+      </div>
+
+      {/* Sekcja tagów */}
+      <div className="w-5/6 mx-auto mt-8 pb-10">
+        <h3 className="text-xl font-semibold mb-4">Tags</h3>
+        <div className="flex gap-2 flex-wrap">
+          <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
+            Indonesia Events
+          </span>
+          <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
+            Jakarta Events
+          </span>
+          <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
+            Things to Do in Jakarta
+          </span>
+          <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
+            Jakarta Seminar
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ShowEvent;

@@ -17,14 +17,14 @@ const SearchBar = ({ onSearch }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center bg-white rounded-full px-4 py-2 shadow-md mt-5"
+      className="flex items-center bg-opacity-100 rounded-full px-4 py-2 shadow-md mt-5 backdrop-blur-sm border border-white w-100"
     >
       <input
         type="text"
         value={searchTerm}
         onChange={handleInputChange}
         placeholder="Search..."
-        className="bg-transparent text-gray-800 placeholder-gray-500 flex-grow focus:outline-none"
+        className="bg-transparent text-white placeholder-white flex-grow focus:outline-none"
       />
       <button type="submit" className="ml-2">
         <svg
@@ -32,8 +32,8 @@ const SearchBar = ({ onSearch }) => {
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="1.5"
-          stroke="currentColor"
-          class="size-6"
+          stroke="white"
+          className="size-6"
         >
           <path
             stroke-linecap="round"

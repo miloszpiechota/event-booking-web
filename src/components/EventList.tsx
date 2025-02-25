@@ -1,43 +1,21 @@
 import React from "react";
-import EventCard from "./EventCard";
-
-const events = [
-  {
-    id: 1,
-    title: "Music Festival 2025",
-    date: "March 10, 2025",
-    location: "New York, NY",
-    description: "Join us for an amazing night of music, food, and fun!",
-  },
-  {
-    id: 2,
-    title: "Tech Conference",
-    date: "April 20, 2025",
-    location: "San Francisco, CA",
-    description: "The latest trends and innovations in the tech world.",
-  },
-  {
-    id: 3,
-    title: "Art Exhibition",
-    date: "May 5, 2025",
-    location: "Paris, France",
-    description: "Explore stunning art pieces from world-renowned artists.",
-  },
-  {
-    id: 4,
-    title: "Art Exhibition",
-    date: "May 5, 2025",
-    location: "Paris, France",
-    description: "Explore stunning art pieces from world-renowned artists.",
-  },
-];
+import EventCard from "../components/EventCard.tsx";
+import { useEvents } from "../../context/EventContext.tsx"; // Importujemy hook kontekstu
 
 const EventList = () => {
+  const { events, loading } = useEvents(); // Pobieramy dane z kontekstu
+
+  if (loading) {
+    return <p className="text-white text-center mt-10">Ładowanie wydarzeń...</p>;
+  }
+
   return (
-    <div className="container mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {events.map((event) => (
-        <EventCard key={event.id} {...event} />
-      ))}
+    <div className="container mx-auto px-4 py-8 flex flex-col items-center gap-6">
+      {events.length > 0 ? (
+        events.map((event) => <EventCard key={event.id} event={event} />)
+      ) : (
+        <p className="text-white text-center">Brak dostępnych wydarzeń</p>
+      )}
     </div>
   );
 };

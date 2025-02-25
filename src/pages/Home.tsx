@@ -3,6 +3,7 @@ import Header from "../components/Header.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import EventList from "../components/EventList.tsx";
 import backgroundImage from "../assets/pexels-wendywei-1387174.jpg";
+import EventMainCard from "../components/EventMainCard.tsx";
 
 function Home() {
   return (
@@ -24,18 +25,26 @@ function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent"></div>
 
           {/* Tekst wyświetlany w dolnym lewym rogu */}
-          <div className="absolute bottom-0 left-0 p-8 z-20">
-            <h1 className="text-3xl font-bold text-white">
-              Welcome to Home Page
-            </h1>
-            <p className="text-gray-300 mt-4">
-              This is a simple Single Page Application using React and Tailwind CSS.
-            </p>
-            <SearchBar onSearch={undefined} />
+          <div className="absolute bottom-0 left-0 p-8 z-20 flex justify-between items-center w-full">
+            <div>
+              <h1 className="text-3xl font-bold text-white">
+                Welcome to Home Page
+              </h1>
+              <p className="text-gray-300 mt-4">
+                This is a simple Single Page Application using React and Tailwind CSS.
+              </p>
+            </div>
+            <div className="ml-8 " >
+              <SearchBar onSearch={undefined} />
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Główna karta wydarzenia */}
+      <EventMainCard />
+
+      {/* Lista wydarzeń */}
       <EventList />
     </>
   );

@@ -33,6 +33,7 @@ export interface EventData {
   e_start_time: string;
   e_end_time: string;
   e_event_category_id: string;
+  e_event_category_name: string;
 }
 
 export interface TicketData {
