@@ -1,12 +1,15 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEvents } from "../../context/EventContext.tsx";
 import Header from "../components/Header.tsx";
 import { enUS } from "date-fns/locale";
 import { format } from "date-fns";
+import 'leaflet/dist/leaflet.css';
+
 const ShowEvent = () => {
   const { id } = useParams();
   const { events } = useEvents();
+  const navigate = useNavigate();
 
   if (!events?.length) {
     return (
@@ -44,7 +47,7 @@ const ShowEvent = () => {
         <Header />
       </div>
       {/* Sekcja główna */}
-      <div className="relative w-full h-[500px] flex items-center">
+      <div className="relative w-full h-[400px] flex items-center">
         {/* Tło obrazka */}
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -58,12 +61,12 @@ const ShowEvent = () => {
         <div className="relative z-10 w-5/6 mx-auto flex flex-col lg:flex-row items-center lg:items-start gap-8">
           {/* Lewa strona: Opis wydarzenia */}
           <div className="w-full lg:w-2/3 text-white space-y-4">
-            <button className="text-gray-400 flex items-center space-x-2">
+            <button className="text-gray-300 flex items-center space-x-2">
               ← Back
             </button>
             <h1 className="text-4xl font-bold">{event.name}</h1>
-            <p className="text-gray-300">By {event.organizer}</p>
-            <p className="text-gray-400">
+            <p className="text-gray-200">By {event.event_organizer.first_name} {event.event_organizer.last_name}</p>
+            <p className="text-gray-300">
               {event.location.street_name}, {event.location.city_name},
               {event.location.apartment_number}, {event.location.country_name},{" "}
               {event.location.zip_code}
@@ -87,7 +90,8 @@ const ShowEvent = () => {
               {event.event_ticket.ticket_pricing.vip_price} $
             </span>
             </div>
-            <button className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg mt-4">
+            <button className="w-full bg-purple-600 text-white font-bold py-3 rounded-lg mt-4"
+            onClick={() => navigate(`/event/${event.id}/book`,{ state: { event } })}>
               Book Now
             </button>
           </div>
@@ -114,14 +118,10 @@ const ShowEvent = () => {
             How can I contact the organizer with any question?
           </h3>
           <p className="text-gray-600">
-            Visit{" "}
-            <a
-              href="https://www.dreamworldwide.net"
-              className="text-blue-600 underline"
-            >
-              www.dreamworldwide.net
-            </a>{" "}
-            for more info.
+            Contact e-mail:
+           {event.event_organizer.contact_email}{" "}
+          Contact info:
+              {event.event_organizer.contact_info}{" "}
           </p>
         </div>
 
@@ -136,20 +136,12 @@ const ShowEvent = () => {
 
       {/* Sekcja tagów */}
       <div className="w-5/6 mx-auto mt-8 pb-10">
-        <h3 className="text-xl font-semibold mb-4">Tags</h3>
+        <h3 className="text-xl font-semibold mb-4">Event Category</h3>
         <div className="flex gap-2 flex-wrap">
           <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
-            Indonesia Events
+            {event.event_category.name}
           </span>
-          <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
-            Jakarta Events
-          </span>
-          <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
-            Things to Do in Jakarta
-          </span>
-          <span className="bg-gray-200 px-4 py-2 rounded-full text-sm">
-            Jakarta Seminar
-          </span>
+        
         </div>
       </div>
     </div>

@@ -20,12 +20,12 @@ const EventCard = ({ event }) => {
         <h5 className="text-2xl font-bold text-gray-900 dark:text-white">
           {event.name}
         </h5>
-        <p className="text-gray-700 dark:text-gray-400">{event.short_description}</p>
-        <p className="text-gray-600">
+        <p className="text-gray-700 dark:text-gray-300">{event.short_description}</p>
+        <p className="text-gray-300">
           {event.start_date} - {event.end_date}
         </p>
-        <p className="text-gray-600">
-          {event.location.city_name}, {event.location.country_name}
+        <p className="text-gray-300">
+          {event.location.city_name}, {event.location.street_name}, {event.location.country_name}, 
         </p>
       </div>
     </div>

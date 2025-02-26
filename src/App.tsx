@@ -11,6 +11,7 @@ import ConfirmNewEvent from './components/ConfirmNewEvent.tsx';
 import { FormDataProvider } from "../context/FormDataContext.tsx"; // dostosuj ścieżkę
 import { EventProvider } from "../context/EventContext.tsx"; 
 import ShowEvent from './pages/ShowEvent.tsx';
+import BookEvent from './pages/BookEvent.tsx';
 function App() {
   return (
 
@@ -24,6 +25,7 @@ function App() {
       <Route path="/event-ticket-form" element={<EventTicketForm />} />
       <Route path="/confirm-new-event" element={<ConfirmNewEvent />} />
       <Route path="/event/:id" element={<ShowEvent />} />
+      <Route path="/event/:id/book" element={<BookEvent />} />
     </Routes>
     </FormDataProvider>
     </EventProvider>

@@ -13,6 +13,7 @@ export const fetchEvents = async () => {
       image_url,
       status,
       created_at,
+      event_organizer:event_organizer_id(first_name, last_name, contact_email,contact_info,phone),
       location:location_id (
         city_name, 
         street_name, 
