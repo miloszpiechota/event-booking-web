@@ -2,14 +2,15 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEvents } from "../../context/EventContext.tsx";
 import Header from "../components/Header.tsx";
-import { enUS } from "date-fns/locale";
-import { format } from "date-fns";
+
 import 'leaflet/dist/leaflet.css';
+import { convertDateTime } from "../api/convertDateTime.ts";
 
 const ShowEvent = () => {
   const { id } = useParams();
   const { events } = useEvents();
   const navigate = useNavigate();
+  
 
   if (!events?.length) {
     return (
@@ -20,6 +21,7 @@ const ShowEvent = () => {
   }
 
   const event = events.find((event) => event.id.toString() === id);
+  const { formattedStartDate, formattedEndDate } = convertDateTime(event.start_date, event.end_date);
 
   if (!event) {
     return (
@@ -29,17 +31,7 @@ const ShowEvent = () => {
     );
   }
 
-  const startDate = format(
-    new Date(event.start_date),
-    "EEEE, MMM d, yyyy 'at' HH:mm a",
-    { locale: enUS }
-  );
-
-  const endDate = format(
-    new Date(event.end_date),
-    "EEEE, MMM d, yyyy 'at' HH:mm a",
-    { locale: enUS }
-  );
+  
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -75,9 +67,10 @@ const ShowEvent = () => {
           </div>
 
           {/* Prawa strona: Kontener z datą i przyciskami */}
-          <div className="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-lg text-black">
+          <div className="w-full lg:w-2/4 bg-white p-6 rounded-xl shadow-lg text-black">
             <h2 className="text-xl font-semibold">Start Date & Time</h2>
-            <p className="text-gray-600">{startDate}</p>
+           <p>Start Date: {formattedStartDate}</p>
+           <p>End Date: {formattedStartDate}</p>
             <button className="text-blue-600 mt-2">+ Add to Calendar</button>
             <h2 className="text-xl font-semibold">
               Standard Price & VIP Price
@@ -108,10 +101,10 @@ const ShowEvent = () => {
 
           <h3 className="text-xl font-semibold">Start Data & End Date</h3>
           <p className="text-gray-600">
-            Start Date: <strong>{startDate}</strong>
+          Start Date: <strong>{formattedStartDate}</strong>
           </p>
           <p className="text-gray-600">
-            End Date: <strong>{endDate}</strong>
+          End Date: <strong>{formattedEndDate}</strong>
           </p>
 
           <h3 className="text-xl font-semibold">
