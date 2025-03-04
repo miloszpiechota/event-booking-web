@@ -24,7 +24,7 @@ function BookEvent() {
           {/* Lewa kolumna */}
           <div className="mb-4 lg:mb-0 lg:w-2/3">
             {showPaymentForm ? (
-              <PaymentForm />
+              <PaymentForm event={event}/>
             ) : (
               <BookingDetails event={event} />
             )}

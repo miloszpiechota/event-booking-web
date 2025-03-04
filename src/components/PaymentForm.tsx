@@ -1,21 +1,36 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
+import { fetchPaymentMethod } from "../api/fetchPaymentMethod.ts"; // Import the function from your file
+import { BookingContext } from "../../context/BookingContext.tsx";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEvents } from "../../context/EventContext.tsx";
 
 const PaymentForm = () => {
+  const [paymentMethods, setPaymentMethods] = useState([]); // Store payment methods
   const [paymentMethod, setPaymentMethod] = useState("mastercard");
   const [cardholderName, setCardholderName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [ccv, setCcv] = useState("");
   const [saveDetails, setSaveDetails] = useState(false);
+  
 
-  // Funkcja obsługująca zmianę metody płatności
+  // Fetch payment methods when the component is mounted
+  useEffect(() => {
+    const getPaymentMethods = async () => {
+      const methods = await fetchPaymentMethod();
+      setPaymentMethods(methods);
+    };
+    getPaymentMethods();
+  }, []);
+
+  // Handle the payment method change
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Tu można zaimplementować logikę obsługi płatności
     console.log("Payment data:", {
       paymentMethod,
       cardholderName,
@@ -26,67 +41,35 @@ const PaymentForm = () => {
     });
   };
 
+ 
+  
+
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto p-6 bg-white rounded shadow">
-      <h2 className="text-xl font-semibold mb-4">Payment method</h2>
-      
+      <h2 className="text-xl font-semibold mb-4">{event.name}</h2>
+
       {/* Wybór metody płatności */}
       <div className="flex items-center space-x-4 mb-6">
-        <button
-          type="button"
-          onClick={() => handlePaymentMethodChange("mastercard")}
-          className={`border rounded p-2 transition-colors ${
-            paymentMethod === "mastercard" ? "border-blue-500" : "border-gray-300"
-          }`}
-        >
-          <img
-            src="https://via.placeholder.com/50x30.png?text=Mastercard"
-            alt="Mastercard"
-            className="w-10 h-auto"
-          />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handlePaymentMethodChange("visa")}
-          className={`border rounded p-2 transition-colors ${
-            paymentMethod === "visa" ? "border-blue-500" : "border-gray-300"
-          }`}
-        >
-          <img
-            src="https://via.placeholder.com/50x30.png?text=Visa"
-            alt="Visa"
-            className="w-10 h-auto"
-          />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handlePaymentMethodChange("paypal")}
-          className={`border rounded p-2 transition-colors ${
-            paymentMethod === "paypal" ? "border-blue-500" : "border-gray-300"
-          }`}
-        >
-          <img
-            src="https://via.placeholder.com/50x30.png?text=PayPal"
-            alt="PayPal"
-            className="w-10 h-auto"
-          />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handlePaymentMethodChange("bank_transfer")}
-          className={`border rounded p-2 transition-colors ${
-            paymentMethod === "bank_transfer" ? "border-blue-500" : "border-gray-300"
-          }`}
-        >
-          <img
-            src="https://via.placeholder.com/50x30.png?text=Bank"
-            alt="Bank Transfer"
-            className="w-10 h-auto"
-          />
-        </button>
+        {paymentMethods.length > 0 ? (
+          paymentMethods.map((method) => (
+            <button
+              key={method.id} // Assuming each payment method has a unique ID
+              type="button"
+              onClick={() => handlePaymentMethodChange(method.name)}
+              className={`border rounded p-2 transition-colors ${
+                paymentMethod === method.name ? "border-blue-500" : "border-gray-300"
+              }`}
+            >
+              <img
+                src={method.icon_url} // Assuming 'icon_url' is the field in your database
+                alt={method.name}
+                className="w-10 h-auto"
+              />
+            </button>
+          ))
+        ) : (
+          <p>No payment methods available.</p>
+        )}
       </div>
 
       {/* Cardholder name */}
@@ -99,9 +82,8 @@ const PaymentForm = () => {
         onChange={(e) => setCardholderName(e.target.value)}
       />
 
-      {/* Dane karty */}
+      {/* Card details */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        {/* Card number */}
         <div className="col-span-2">
           <label className="block mb-1 font-medium text-gray-700">Card number</label>
           <input
@@ -113,7 +95,6 @@ const PaymentForm = () => {
           />
         </div>
 
-        {/* Expiry date */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">Date</label>
           <input
@@ -125,7 +106,6 @@ const PaymentForm = () => {
           />
         </div>
 
-        {/* CCV */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">CCV</label>
           <input
@@ -138,7 +118,7 @@ const PaymentForm = () => {
         </div>
       </div>
 
-      {/* Informacja o płatności */}
+      {/* Payment info */}
       <p className="text-sm text-gray-600 flex items-center mb-4">
         <svg
           className="w-4 h-4 mr-2 text-blue-500"
@@ -150,7 +130,7 @@ const PaymentForm = () => {
         Credit Card payments may take up to 24h to be processed
       </p>
 
-      {/* Zapisanie danych karty */}
+      {/* Save card details checkbox */}
       <div className="flex items-center mb-6">
         <input
           type="checkbox"
@@ -175,3 +155,7 @@ const PaymentForm = () => {
 };
 
 export default PaymentForm;
+
+function useContext(BookingContext: any): { event: any; firstName: any; setFirstName: any; lastName: any; setLastName: any; email: any; setEmail: any; phonePrefix: any; setPhonePrefix: any; phoneNumber: any; setPhoneNumber: any; selectedPrice: any; setSelectedPrice: any; ticketCount: any; setTicketCount: any; } {
+  throw new Error("Function not implemented.");
+}
