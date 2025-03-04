@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { convertDateTime } from "../api/convertDateTime.ts";
+import { convertDateTime } from "../api/convertDateTime.ts"; // Funkcja do formatowania daty
 
 interface Event {
   id: string;
@@ -16,12 +15,11 @@ interface Event {
   };
 }
 
-interface EventCardProps {
+interface EventCard2Props {
   event: Event;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event }) => {
-  const navigate = useNavigate();
+const EventCard2: React.FC<EventCard2Props> = ({ event }) => {
   const { formattedStartDate, formattedEndDate } = convertDateTime(event.start_date, event.end_date);
 
   const [isReadMore, setIsReadMore] = useState(false);
@@ -32,21 +30,14 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   };
 
   return (
-    <div 
-      className="flex flex-col sm:flex-row w-full max-w-4xl rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 cursor-pointer transition-transform hover:scale-105"
-      onClick={() => navigate(`/event/${event.id}`)}
-    >
-      {/* Obrazek (po lewej) */}
-      <div className="w-full sm:w-1/3 h-48 sm:h-auto">
-        <img
-          className="object-cover w-full h-full rounded-l-2xl sm:rounded-none"
-          src={event.image_url}
-          alt={event.name}
-        />
+    <div className="flex flex-col w-full max-w-xs bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-800">
+      {/* Obrazek */}
+      <div className="h-48 w-full">
+        <img src={event.image_url} alt={event.name} className="w-full h-full object-cover" />
       </div>
 
-      {/* Treść (po prawej) */}
-      <div className="w-full sm:w-2/3 p-6 flex flex-col space-y-3">
+      {/* Treść */}
+      <div className="p-4 flex flex-col space-y-3">
         <h5 className="text-2xl font-bold text-gray-900 dark:text-white">{event.name}</h5>
 
         {/* Opis */}
@@ -76,4 +67,4 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   );
 };
 
-export default EventCard;
+export default EventCard2;

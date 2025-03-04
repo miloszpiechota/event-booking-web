@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar.tsx";
 import EventList from "../components/EventList.tsx";
 import backgroundImage from "../assets/pexels-wendywei-1387174.jpg";
 import EventMainCard from "../components/EventMainCard.tsx";
+import EventList2 from "../components/EventList2.tsx";
 
 function Home() {
   return (
@@ -34,7 +35,7 @@ function Home() {
                 This is a simple Single Page Application using React and Tailwind CSS.
               </p>
             </div>
-            <div className="ml-8 " >
+            <div className="ml-8">
               <SearchBar onSearch={undefined} />
             </div>
           </div>
@@ -44,8 +45,13 @@ function Home() {
       {/* Główna karta wydarzenia */}
       <EventMainCard />
 
+      {/* Karuzela wydarzeń */}
+      <EventList2 />
+
       {/* Lista wydarzeń */}
-      <EventList />
+      <div className="mt-1">
+        <EventList />
+      </div>
     </>
   );
 }
