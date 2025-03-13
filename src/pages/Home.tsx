@@ -10,7 +10,7 @@ function Home() {
   return (
     <>
       {/* Kontener zawierający obrazek i header */}
-      <div className="relative">
+      <div className="relative bg-gray-100 dark:bg-gray-800">
         {/* Header pozycjonowany absolutnie na górze */}
         <div className="absolute top-0 left-0 w-full z-10">
           <Header />

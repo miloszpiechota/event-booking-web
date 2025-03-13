@@ -5,7 +5,7 @@ import { BookingContext } from "../../context/BookingContext.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEvents } from "../../context/EventContext.tsx";
 
-const PaymentForm = () => {
+const PaymentForm = ({ onPreviousStep })  => {
   const [paymentMethods, setPaymentMethods] = useState([]); // Store payment methods
   const [paymentMethod, setPaymentMethod] = useState("mastercard");
   const [cardholderName, setCardholderName] = useState("");
@@ -149,6 +149,12 @@ const PaymentForm = () => {
         className="w-full bg-blue-600 text-white font-semibold py-3 rounded hover:bg-blue-700 transition-colors"
       >
         Pay Now
+      </button>
+      <button 
+        className="mt-4 px-4 py-2 bg-gray-600 text-white rounded"
+        onClick={onPreviousStep}
+      >
+        Back
       </button>
     </form>
   );

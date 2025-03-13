@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { BookingContext } from "../../context/BookingContext.tsx";
-import EventDetails from "./EventDetails.tsx";
+import EventCard from "./EventCard.tsx";
 import validateBookingFormData from "../api/validateBookingFormData.ts";
-
-function BookingDetails() {
+import { useParams } from "react-router-dom";
+function BookingDetails({ onNextStep }) {
   const {
     event,
     firstName,
@@ -22,8 +23,12 @@ function BookingDetails() {
     setTicketCount,
   } = useContext(BookingContext);
 
+
+  const { id } = useParams(); // ID wydarzenia
+  
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const validationErrors = validateBookingFormData({
@@ -32,9 +37,16 @@ function BookingDetails() {
       email,
       phoneNumber,
     });
+  
+    // Sprawdzenie, czy wybrano cenę biletu
+    if (!selectedPrice) {
+      validationErrors.selectedPrice = "You must select a ticket price.";
+    }
+  
     setErrors(validationErrors);
     setIsFormValid(Object.keys(validationErrors).length === 0);
-  }, [firstName, lastName, email, phoneNumber]);
+  }, [firstName, lastName, email, phoneNumber, selectedPrice]);
+  
 
   const handleSelectPrice = (price) => {
     setSelectedPrice(price);
@@ -51,15 +63,23 @@ function BookingDetails() {
     setter(e.target.value);
   };
 
+  const handleNext = (e) => {
+    e.preventDefault();
+    if (isFormValid) {
+      onNextStep(); // Przekazujemy do rodzica, by zmienić komponent na PaymentForm
+    }
+  };
+  
   return (
     <div className="bg-white p-6 rounded-lg shadow w-full md:w-6/6">
-      <EventDetails event={event} />
+      <EventCard event={event} />
 
-      <h2 className="text-2xl font-semibold mb-6">
+      <h2 className="text-2xl font-semibold mb-6 mt-6">
         Enter your personal details
       </h2>
 
       <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Lewa kolumna */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             First Name
@@ -80,6 +100,7 @@ function BookingDetails() {
           )}
         </div>
 
+        {/* Prawa kolumna */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             Last Name
@@ -100,6 +121,7 @@ function BookingDetails() {
           )}
         </div>
 
+        {/* Lewa kolumna */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             Email Address
@@ -120,6 +142,7 @@ function BookingDetails() {
           )}
         </div>
 
+        {/* Prawa kolumna */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             Phone Number
@@ -152,67 +175,81 @@ function BookingDetails() {
           )}
         </div>
 
-        {/* Sekcja wyboru biletu */}
-       
+        {/* Nagłówek sekcji wyboru biletu zajmujący obie kolumny */}
+        <div className="col-span-2">
+          <h2 className="text-2xl font-semibold mt-6 mb-4">
+            Choose your ticket
+          </h2>
+        </div>
 
-        <div className="relative md:grid-cols-2 gap-6 items-start">
-        <h2 className="text-2xl font-semibold mt-6 mb-4">Choose your ticket</h2>
-          {/* Wybór ceny biletu - po lewej stronie */}
-          <div className="flex flex-col">
-            <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
-              Select Ticket Pricing
-            </label>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                className={`w-full py-3 rounded-lg text-white font-bold ${
-                  selectedPrice ===
+        {/* Lewa kolumna – Select Ticket Pricing */}
+        <div className="relative">
+          <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
+            Select Ticket Pricing
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              type="button"
+              className={`w-full py-3 rounded-lg text-white font-bold ${
+                selectedPrice === event.event_ticket.ticket_pricing.ticket_price
+                  ? "bg-purple-600"
+                  : "bg-gray-400"
+              }`}
+              onClick={() =>
+                handleSelectPrice(
                   event.event_ticket.ticket_pricing.ticket_price
-                    ? "bg-purple-600"
-                    : "bg-gray-400"
-                }`}
-                onClick={() =>
-                  handleSelectPrice(
-                    event.event_ticket.ticket_pricing.ticket_price
-                  )
-                }
-              >
-                Standard - {event.event_ticket.ticket_pricing.ticket_price} zł
-              </button>
+                )
+              }
+            >
+              Standard - {event.event_ticket.ticket_pricing.ticket_price} zł
+            </button>
 
-              <button
-                type="button"
-                className={`w-full py-3 rounded-lg text-white font-bold ${
-                  selectedPrice === event.event_ticket.ticket_pricing.vip_price
-                    ? "bg-purple-600"
-                    : "bg-gray-400"
-                }`}
-                onClick={() =>
-                  handleSelectPrice(event.event_ticket.ticket_pricing.vip_price)
-                }
-              >
-                VIP - {event.event_ticket.ticket_pricing.vip_price} zł
-              </button>
-            </div>
+            <button
+              type="button"
+              className={`w-full py-3 rounded-lg text-white font-bold ${
+                selectedPrice === event.event_ticket.ticket_pricing.vip_price
+                  ? "bg-purple-600"
+                  : "bg-gray-400"
+              }`}
+              onClick={() =>
+                handleSelectPrice(
+                  event.event_ticket.ticket_pricing.vip_price
+                )
+              }
+            >
+              VIP - {event.event_ticket.ticket_pricing.vip_price} zł
+            </button>
           </div>
+        </div>
 
-          {/* Liczba biletów - po prawej stronie */}
-          <div className="flex flex-col">
-            <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
-              Number of Tickets
-            </label>
-            <input
-              type="number"
-              min="1"
-              max={event.event_ticket.quantity}
-              value={ticketCount}
-              onChange={handleTicketCountChange}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-green-500"
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Max available: {event.event_ticket.quantity}
-            </p>
-          </div>
+        {/* Prawa kolumna – Number of Tickets */}
+        <div className="relative">
+          <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
+            Number of Tickets
+          </label>
+          <input
+            type="number"
+            min="1"
+            max={event.event_ticket.quantity}
+            value={ticketCount}
+            onChange={handleTicketCountChange}
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            Max available: {event.event_ticket.quantity}
+          </p>
+        </div>
+
+        {/* Przycisk Next */}
+        <div className="col-span-2 mt-4">
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={!isFormValid}
+            className="w-full bg-blue-600 text-white font-semibold py-3 rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </form>
     </div>

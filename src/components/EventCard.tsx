@@ -39,7 +39,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       {/* Obrazek (po lewej) */}
       <div className="w-full sm:w-1/3 h-48 sm:h-auto">
         <img
-          className="object-cover w-full h-full rounded-l-2xl sm:rounded-none"
+          className="object-cover h-70 w-full rounded-2xl sm:rounded-none"
           src={event.image_url}
           alt={event.name}
         />
