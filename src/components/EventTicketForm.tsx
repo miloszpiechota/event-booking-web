@@ -1,33 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid"; // UUID do generowania unikalnego identyfikatora
+import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import QRCode from "react-qr-code";
 import validateEventTicketFormData from "../api/validateEventTicketFormData.ts";
 import { useFormData } from "../../context/FormDataContext.tsx";
 
 const EventTicketForm = () => {
   const navigate = useNavigate();
-
   const { ticketData, setTicketData } = useFormData();
-
   const [errors, setErrors] = useState({});
   const [qrCodeValue, setQrCodeValue] = useState("");
 
-  // Generowanie unikalnego kodu QR po każdej zmianie nazwy biletu
+  // Funkcja do generowania "bezpiecznego" tokenu
+  // UWAGA: W prawdziwej aplikacji token należy generować na serwerze!
+  const generateTicketToken = (data) => {
+    const payload = {
+      ticketId: uuidv4(),
+      ticketName: data.t_ticket_name,
+      eventId: data.t_event_id, // załóżmy, że masz identyfikator wydarzenia w danych formularza
+      issuedAt: Date.now(),
+    };
+    // Na potrzeby demo używamy btoa do "zakodowania" payloadu.
+    // W produkcji użyj JWT lub innego mechanizmu z podpisem cyfrowym.
+    return btoa(JSON.stringify(payload));
+  };
+
   useEffect(() => {
     if (ticketData.t_ticket_name) {
-      const uniqueId = uuidv4(); // Tworzymy unikalny identyfikator
-      const qrLink = `https://goEvent.com/ticket/${uniqueId}`; // Generujemy link biletu
+      // Generujemy token zabezpieczający dane biletu
+      const token = generateTicketToken(ticketData);
+      // Link zawiera token, a dedykowany endpoint zweryfikuje token i zwróci obraz QR
+      const qrLink = `https://goEventApp.com/ticket?token=${token}`;
       setQrCodeValue(qrLink);
-      setTicketData((prev) => ({ ...prev, t_qr_code: qrLink }));
+      // Zapisujemy token w danych biletu, aby móc później go wykorzystać
+      setTicketData((prev) => ({ ...prev, t_qr_code: token }));
     }
-  }, [ticketData.t_ticket_name]); // QR generuje się, gdy użytkownik wpisze nazwę biletu
+  }, [ticketData.t_ticket_name]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTicketData({ ...ticketData, [e.target.name]: e.target.value });
   };
 
- 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors = validateEventTicketFormData(ticketData);
@@ -44,7 +57,6 @@ const EventTicketForm = () => {
       <h1 className="text-2xl font-bold mb-4">Complete your event data:</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <h2 className="text-xl font-semibold mt-6">Event Ticket Data:</h2>
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block font-semibold">Event Ticket Name:</label>
@@ -59,7 +71,6 @@ const EventTicketForm = () => {
               <p className="text-red-500 text-sm">{errors.t_ticket_name}</p>
             )}
           </div>
-
           <div>
             <label className="block font-semibold">Max Quantity:</label>
             <input
@@ -123,7 +134,6 @@ const EventTicketForm = () => {
           </div>
         </div>
 
-        
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
