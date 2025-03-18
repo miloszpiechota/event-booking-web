@@ -18,7 +18,7 @@ function Home() {
 
         {/* Kontener z tłem ustawionym na obrazek */}
         <div
-          className="relative h-[400px] bg-cover bg-center bg-no-repeat rounded-lg shadow-lg overflow-hidden"
+          className="relative h-[350px] bg-cover bg-center bg-no-repeat rounded-lg shadow-lg overflow-hidden"
           style={{
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: "cover",

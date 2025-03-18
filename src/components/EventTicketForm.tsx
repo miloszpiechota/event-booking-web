@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import QRCode from "react-qr-code";
-import validateEventTicketFormData from "../api/validateEventTicketFormData.ts";
+import validateEventTicketFormData from "../validation/validateEventTicketFormData.ts";
 import { useFormData } from "../../context/FormDataContext.tsx";
 
 const EventTicketForm = () => {

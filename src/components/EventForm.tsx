@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { validateAddress } from "../api/validateAddress.ts";
+import { validateAddress } from "../validation/validateAddress.ts";
 import MapPicker from "./MapPicker.tsx";
 // Importujemy komponenty z react-leaflet
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { fetchEventCategory } from "../api/fetchEventCategory.ts";
-import { validateEventFormData } from "../api/validateEventFormData.ts";
+import { validateEventFormData } from "../validation/validateEventFormData.ts";
 import { reverseGeocode } from "../api/reverseGeoCode.ts";
 import { useFormData } from "../../context/FormDataContext.tsx";
 const EventForm = () => {

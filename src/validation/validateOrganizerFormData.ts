@@ -72,10 +72,10 @@ const validDomains = [
   
     if (!organizerData.u_zip_code.trim()) {
       newErrors.u_zip_code = "Zip code is required";
-    } else if (!/^[A-Za-z0-9\s]+$/.test(organizerData.u_zip_code.trim())) {
-      newErrors.u_zip_code = "Invalid zip code format (only letters, digits, and spaces allowed)";
+    } else if (!/^[A-Za-z0-9]{2,3}-?[A-Za-z0-9]{3,4}$/.test(organizerData.u_zip_code.trim()) && !/^\d{5}(-\d{4})?$/.test(organizerData.u_zip_code.trim())) {
+      newErrors.u_zip_code = "Invalid zip code format. Please use the appropriate format: 23-123 (Poland), 12345 (USA), 12345-6789 (USA), or 12345 (Germany)";
     }
-  
+    
     if (!organizerData.u_birth_date) {
       newErrors.u_birth_date = "Date of birth is required";
     } else {

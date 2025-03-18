@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookingContext } from "../../context/BookingContext.tsx";
 import EventCard from "./EventCard.tsx";
-import validateBookingFormData from "../api/validateBookingFormData.ts";
+import validateBookingFormData from "../validation/validateBookingFormData.ts";
 import { useParams } from "react-router-dom";
 function BookingDetails({ onNextStep }) {
   const {

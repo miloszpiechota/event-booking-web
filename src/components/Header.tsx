@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 // Możesz przekazać nazwę użytkownika jako prop, np. <Header username="Michał" />
 const Header = ({ username = "nazwa uzytkownika" }) => {
   return (
-    <header className=" text-white p-2 shadow-lg">
+    <header className="text-white p-2 shadow-lg">
       <div className="container mx-auto flex items-center">
         {/* Lewa sekcja: Logo */}
         <div className="flex-1">
@@ -20,16 +20,21 @@ const Header = ({ username = "nazwa uzytkownika" }) => {
                   Home
                 </Link>
               </li>
-              <li>
+              <li className="border-l-2 border-gray-300 px-6">
                 <Link to="/create" className="hover:text-gray-300 transition">
-                  Create
+                  Create New Event
                 </Link>
               </li>
-              <li>
-                <Link to="/about" className="hover:text-gray-300 transition">
-                  Messages
+              <li className="border-l-2 border-gray-300 px-6">
+                <Link to="/ticket-box" className="hover:text-gray-300 transition">
+                  Your Ticket Box
                 </Link>
               </li>
+              {/* <li className="border-l-2 border-gray-300 px-6">
+                <Link to="/ticket-box" className="hover:text-gray-300 transition">
+                  Your Account
+                </Link>
+              </li> */}
             </ul>
           </nav>
         </div>
