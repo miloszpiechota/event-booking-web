@@ -5,6 +5,7 @@ import TicketCard from '../components/TicketCard.tsx';
 function TicketList() {
   const [orders, setOrders] = useState([]); // Przechowujemy zamówienia
   const [loading, setLoading] = useState(true); // Stan ładowania
+  
 
   // Pobieramy zamówienia z API
   useEffect(() => {

@@ -22,55 +22,60 @@ interface EventCardProps {
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const navigate = useNavigate();
-  const { formattedStartDate, formattedEndDate } = convertDateTime(event.start_date, event.end_date);
-
+  const { formattedStartDate, formattedEndDate } = convertDateTime(
+    event.start_date,
+    event.end_date
+  );
   const [isReadMore, setIsReadMore] = useState(false);
 
-  // Funkcja do obsługi "Read More / Read Less"
-  const toggleReadMore = () => {
-    setIsReadMore((prev) => !prev);
-  };
+  const toggleReadMore = () => setIsReadMore((prev) => !prev);
 
   return (
-    <div 
-      className="flex flex-col sm:flex-row w-full max-w-4xl rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 cursor-pointer transition-transform hover:scale-105"
+    <div
+      className="max-w-3xl w-full backdrop-blur-lg shadow-lg rounded-lg overflow-hidden flex flex-row cursor-pointer transform transition-transform hover:scale-105"
       onClick={() => navigate(`/event/${event.id}`)}
     >
-      {/* Obrazek (po lewej) */}
-      <div className="w-full sm:w-1/3 h-48 sm:h-auto">
-        <img
-          className="object-cover h-70 w-full rounded-2xl sm:rounded-none"
-          src={event.image_url}
-          alt={event.name}
-        />
+      {/* Sekcja obrazka */}
+      <div
+        className="relative w-2/3 bg-cover bg-center min-h-[300px]"
+        style={{ backgroundImage: `url(${event.image_url})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+        <div className="relative z-10 p-6 flex flex-col h-full justify-end">
+          <h2 className="text-3xl font-bold text-white mb-2">{event.name}</h2>
+          <p className="text-sm text-gray-200">
+            {event.location.city_name}, {event.location.street_name}
+          </p>
+          <p className="text-sm text-gray-200">{event.location.country_name}</p>
+          <p className="text-sm text-gray-100 mt-4">
+            {isReadMore
+              ? event.short_description
+              : `${event.short_description.substring(0, 100)}...`}
+          </p>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleReadMore();
+            }}
+            className="mt-2 w-max text-blue-300 text-xs font-semibold hover:underline"
+          >
+            {isReadMore ? "Read Less" : "Read More"}
+          </button>
+        </div>
       </div>
 
-      {/* Treść (po prawej) */}
-      <div className="w-full sm:w-2/3 p-6 flex flex-col space-y-3">
-        <h5 className="text-2xl font-bold text-gray-900 dark:text-white">{event.name}</h5>
-
-        {/* Opis */}
-        <p className="text-base text-gray-600 dark:text-gray-300">
-          {isReadMore ? event.short_description : `${event.short_description.substring(0, 100)}...`}
-        </p>
-
-        {/* Przycisk Read More */}
-        <button
-          onClick={toggleReadMore}
-          className="text-sm text-blue-600 dark:text-blue-400 mt-2"
-        >
-          {isReadMore ? "Read Less" : "Read More"}
-        </button>
-
-        {/* Data */}
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {formattedStartDate} - {formattedEndDate}
-        </p>
-
-        {/* Lokalizacja */}
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {event.location.city_name}, {event.location.street_name}, {event.location.country_name}
-        </p>
+      {/* Sekcja szczegółów */}
+      <div className="w-1/3 bg-black/40 backdrop-blur-lg  text-white p-6 flex flex-col relative rounded-r-lg shadow-lg">
+        <div className="flex-1">
+          <div className="mb-3">
+            <p className="text-xs uppercase text-gray-300">Start Date</p>
+            <p className="text-lg font-bold">{formattedStartDate}</p>
+          </div>
+          <div className="mb-3">
+            <p className="text-xs uppercase text-gray-300">End Date</p>
+            <p className="text-lg font-bold">{formattedEndDate}</p>
+          </div>
+        </div>
       </div>
     </div>
   );

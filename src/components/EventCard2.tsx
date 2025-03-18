@@ -30,7 +30,7 @@ const EventCard2: React.FC<EventCard2Props> = ({ event }) => {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-xs bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-800">
+    <div className="flex flex-col w-full max-w-xs bg-black/40 backdrop-blur-lg rounded-2xl overflow-hidden shadow-lg ">
       {/* Obrazek */}
       <div className="h-48 w-full">
         <img src={event.image_url} alt={event.name} className="w-full h-full object-cover" />

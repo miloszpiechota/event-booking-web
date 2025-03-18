@@ -2,7 +2,7 @@ import React from "react";
 import Header from "../components/Header.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import EventList from "../components/EventList.tsx";
-import backgroundImage from "../assets/pexels-wendywei-1387174.jpg";
+import backgroundImage from "../assets/background3.webp";
 import EventMainCard from "../components/EventMainCard.tsx";
 import EventList2 from "../components/EventList2.tsx";
 
@@ -18,9 +18,15 @@ function Home() {
 
         {/* Kontener z tłem ustawionym na obrazek */}
         <div
-          className="relative h-[300px] bg-cover bg-center"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
+          className="relative h-[400px] bg-cover bg-center bg-no-repeat rounded-lg shadow-lg overflow-hidden"
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
         >
+          {/* <div className="absolute inset-0 bg-black/30 backdrop-blur-md"></div> */}
           {/* Delikatny gradientowy overlay zamiast czarnego */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent"></div>
@@ -32,7 +38,8 @@ function Home() {
                 Welcome to Home Page
               </h1>
               <p className="text-gray-300 mt-4">
-                This is a simple Single Page Application using React and Tailwind CSS.
+                This is a simple Single Page Application using React and
+                Tailwind CSS.
               </p>
             </div>
             <div className="ml-8">

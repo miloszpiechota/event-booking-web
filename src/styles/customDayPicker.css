@@ -1,0 +1,52 @@
+/* customDayPicker.css */
+.custom-day-picker {
+  background-color: transparent !important;
+}
+
+.custom-day-picker .rdp {
+  background-color: transparent !important;
+}
+
+.custom-day-picker .rdp-day {
+  color: white !important;
+}
+
+/* Stylowanie dla zaznaczonych dni */
+.custom-day-picker .highlighted-day {
+  background-color: #33b1ff !important; /* Kolor tła dla zaznaczonych dni */
+  color: white !important; /* Kolor tekstu */
+  border-radius: 50%; /* Zaokrąglenie tła */
+  font-weight: bold; /* Grubsza czcionka */
+}
+
+.custom-day-picker .rdp-head_cell,
+.custom-day-picker .rdp-caption {
+  color: white !important;
+}
+/* customDayPicker.css */
+
+.popup-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+ 
+  border-radius: 8px;
+  max-width: 100%;
+  z-index: 9999;
+  text-align: center;
+}
+
+.popup {
+  background-color: #333;
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.highlighted-day {
+  background-color: #4CAF50 !important; /* Kolor dla zaznaczonego dnia */
+  color: white;
+}

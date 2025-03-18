@@ -15,6 +15,7 @@ function TicketCard({ orderTicket }) {
   const { name, qr_code } = event_ticket || {};
   const { ticket_price, vip_price, fee } = ticket_pricing || {};
 
+
   // Możesz podmienić te wartości, jeśli chcesz użyć innych danych z orderTicket
   const rowNumber = quantity || 3;
   const seatNumber = 4;

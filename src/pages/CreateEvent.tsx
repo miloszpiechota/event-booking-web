@@ -45,14 +45,15 @@ const CreateEvent = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+    <div className="max-w-2xl mx-auto p-6 shadow-md rounded-lg mt-6" style={{ backgroundColor: "rgba(73, 126, 207, 0.13)" }}>
+
       <h1 className="text-2xl font-bold mb-4">Complete Your Contact Data</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <h2 className="text-xl font-semibold mt-6">Personal Data</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label htmlFor="u_first_name" className="block font-semibold">
+            <label htmlFor="u_first_name" className="block font-semibold ">
               First Name:
             </label>
             <input
@@ -62,7 +63,7 @@ const CreateEvent = () => {
               placeholder="John"
               onChange={handleChange}
               value={organizerData.u_first_name}
-              className={`w-full p-2 border rounded ${
+              className={`w-full p-2  border-black-500 rounded bg-white ${
                 errors.u_first_name && "border-red-500"
               }`}
             />
