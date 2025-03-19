@@ -3,10 +3,22 @@
 @layer components {
     
     .btn-primary {
-      @apply bg-purple-600 hover:bg-purple-700 transition;
+      @apply bg-purple-600 hover:bg-purple-700 transition w-full text-white py-2 rounded hover:bg-purple-500 transition mt-5;
     }
   
     .btn-secondary {
       @apply bg-gray-600 hover:bg-gray-700 transition;
     }
+
+    .h2-primary{
+      @apply text-xl font-semibold border-b border-gray-500 pb-2;
+    }
+
+    .btn-back{
+      @apply relative top-4 mb-10 text-white hover:text-gray-300 mb-5;
+    }
+
+    /* .map-primary{
+      @apply 
+    } */
   }

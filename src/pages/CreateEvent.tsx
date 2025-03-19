@@ -129,6 +129,24 @@ const CreateEvent = () => {
             )}
           </div>
         </div>
+        <div>
+          <label htmlFor="u_birth_date" className="block font-semibold">
+            Date of Birth:
+          </label>
+          <input
+            type="date"
+            id="u_birth_date"
+            name="u_birth_date"
+            onChange={handleChange}
+            value={organizerData.u_birth_date}
+            className={`w-full p-2 border rounded ${
+              errors.u_birth_date && "border-red-500"
+            }`}
+          />
+          {errors.u_birth_date && (
+            <p className="text-red-500 text-sm">{errors.u_birth_date}</p>
+          )}
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
         <div>
@@ -315,7 +333,7 @@ const CreateEvent = () => {
 
         <button
           type="submit"
-          className="btn btn-primary w-full bg-primary text-white py-2 rounded hover:bg-blue-600 transition mt-10"
+          className="btn-primary"
           disabled={isValidatingAddress}
         >
           {isValidatingAddress ? "Validating Address..." : "Next"}

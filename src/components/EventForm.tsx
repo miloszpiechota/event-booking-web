@@ -14,7 +14,11 @@ const EventForm = () => {
   const [errors, setErrors] = useState({});
   const [isValidatingAddress, setIsValidatingAddress] = useState(false);
   // Stan przechowujący aktualną pozycję markera (domyślnie ustawiamy na przykładowe współrzędne)
-  const [mapPosition, setMapPosition] = useState({ lat: 51.505, lng: -0.09 });
+  const [mapPosition, setMapPosition] = useState({
+    lat: 52.2298,
+    lng: 21.0122,
+  });
+
   const [categories, setCategories] = useState([]);
 
   const { eventData, setEventData } = useFormData();
@@ -66,14 +70,13 @@ const EventForm = () => {
     const selectedCategory = categories.find(
       (cat) => String(cat.id) === selectedCategoryId // Zapewnia porównanie string do string
     );
-  
+
     setEventData((prev) => ({
       ...prev,
       e_event_category_id: selectedCategoryId,
       e_event_category_name: selectedCategory ? selectedCategory.name : "",
     }));
   };
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,10 +120,15 @@ const EventForm = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
-      <h1 className="text-2xl font-bold mb-4">Complete your event data:</h1>
+    <div className="relative max-w-2xl bg-black/40 backdrop-blur-lg mx-auto p-6 shadow-md rounded-lg mt-6 text-white">
+      <button onClick={() => navigate(-1)} className="btn-back">
+        &larr; Back
+      </button>
+      <h1 className="text-2xl font-bold mb-10">Complete Your Event Data</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <h2 className="text-xl font-semibold mt-6">Event Data:</h2>
+        {/* Lewa kolumna – Event Data */}
+
+        <h2 className="h2-primary">Event Data:</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="e_event_name" className="block font-semibold">
@@ -132,8 +140,8 @@ const EventForm = () => {
               name="e_event_name"
               onChange={handleChange}
               value={eventData.e_event_name}
-              className="w-full p-2 border rounded"
-              placeholder="Enter event name"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
+              placeholder="Event Name"
             />
             {errors.e_event_name && (
               <p className="text-red-500 text-sm">{errors.e_event_name}</p>
@@ -149,7 +157,7 @@ const EventForm = () => {
               name="e_event_category_id"
               onChange={handleCategoryChange}
               value={eventData.e_event_category_id}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             >
               <option value="">Select a category</option>
               {categories.map((category) => (
@@ -164,6 +172,7 @@ const EventForm = () => {
             )}
           </div>
         </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="e_start_date" className="block font-semibold">
@@ -174,8 +183,9 @@ const EventForm = () => {
               id="e_start_date"
               name="e_start_date"
               onChange={handleChange}
+              placeholder="DD-MM-YYYY"
               value={eventData.e_start_date}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
             {errors.e_start_date && (
               <p className="text-red-500 text-sm">{errors.e_start_date}</p>
@@ -191,7 +201,7 @@ const EventForm = () => {
               name="e_start_time"
               onChange={handleChange}
               value={eventData.e_start_time}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
           </div>
         </div>
@@ -207,7 +217,7 @@ const EventForm = () => {
               name="e_end_date"
               onChange={handleChange}
               value={eventData.e_end_date}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
             {errors.e_end_date && (
               <p className="text-red-500 text-sm">{errors.e_end_date}</p>
@@ -223,7 +233,7 @@ const EventForm = () => {
               name="e_end_time"
               onChange={handleChange}
               value={eventData.e_end_time}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
           </div>
         </div>
@@ -238,7 +248,7 @@ const EventForm = () => {
             name="e_short_descryp"
             onChange={handleChange}
             value={eventData.e_short_descryp}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             placeholder="Enter short description max 100 characters"
           />
           {errors.e_short_descryp && (
@@ -256,7 +266,7 @@ const EventForm = () => {
             name="e_long_descryp"
             onChange={handleChange}
             value={eventData.e_long_descryp}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             placeholder="Enter long description max 500 characters"
           />
           {errors.e_long_descryp && (
@@ -274,14 +284,15 @@ const EventForm = () => {
             name="e_image_url"
             onChange={handleChange}
             value={eventData.e_image_url}
-            className="w-full p-2 border rounded"
+            placeholder="Pase Your Image URL here"
+            className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
           />
           {errors.e_image_url && (
             <p className="text-red-500 text-sm">{errors.e_image_url}</p>
           )}
         </div>
 
-        <h2 className="text-xl font-semibold mt-6">Event Address:</h2>
+        <h2 className="h2-primary mt-10">Event Address:</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -294,8 +305,8 @@ const EventForm = () => {
               name="e_street"
               value={eventData.e_street}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
-              placeholder="123 Main St."
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
+              placeholder="Main St."
             />
             {errors.e_street && (
               <p className="text-red-500 text-sm">{errors.e_street}</p>
@@ -303,7 +314,7 @@ const EventForm = () => {
           </div>
           <div>
             <label htmlFor="e_apartment_number" className="block font-semibold">
-              Apartment Number:
+              House or Apartment Number:
             </label>
             <input
               type="text"
@@ -311,7 +322,7 @@ const EventForm = () => {
               name="e_apartment_number"
               value={eventData.e_apartment_number}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
               placeholder="23/4"
             />
             {errors.e_apartment_number && (
@@ -333,7 +344,7 @@ const EventForm = () => {
               name="e_zip_code"
               value={eventData.e_zip_code}
               onChange={handleChange}
-              className={`w-full p-2 border rounded ${
+              className={`w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500 ${
                 errors.e_zip_code && "border-red-500"
               }`}
               placeholder="XX-XXX"
@@ -352,7 +363,8 @@ const EventForm = () => {
               name="e_city"
               value={eventData.e_city}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              placeholder="City Name"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
             {errors.e_city && (
               <p className="text-red-500 text-sm">{errors.e_city}</p>
@@ -368,8 +380,8 @@ const EventForm = () => {
               name="e_country"
               value={eventData.e_country}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
-              placeholder="PL"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
+              placeholder="Country Name:"
             />
             {errors.e_country && (
               <p className="text-red-500 text-sm">{errors.e_country}</p>
@@ -388,7 +400,7 @@ const EventForm = () => {
               name="e_latitude"
               value={eventData.e_latitude}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
             {errors.e_latitude && (
               <p className="text-red-500 text-sm">{errors.e_latitude}</p>
@@ -404,66 +416,56 @@ const EventForm = () => {
               name="e_longitude"
               value={eventData.e_longitude}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
             {errors.e_longitude && (
               <p className="text-red-500 text-sm">{errors.e_longitude}</p>
             )}
           </div>
         </div>
-      </form>
-
-      <h2 className="text-xl font-semibold mb-2">
-        Select your location on the map:
-      </h2>
-      <MapContainer
-        center={mapPosition}
-        zoom={13}
-        style={{ height: "400px", width: "100%" }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <MapPicker
-          position={mapPosition}
-          onPositionChange={async (newPos) => {
-            setMapPosition(newPos);
-            // Uaktualniamy tylko pola współrzędnych
-            setEventData((prev) => ({
-              ...prev,
-              e_latitude: newPos.lat.toString(),
-              e_longitude: newPos.lng.toString(),
-            }));
-            // Wywołujemy reverse geocoding, aby uaktualnić pola adresowe
-            const revAddress = await reverseGeocode(newPos.lat, newPos.lng);
-            if (revAddress) {
+        <h2 className="h2-primary mt-10 mb-10">
+          You can select Your Event location on the map:
+        </h2>
+        <MapContainer
+          center={mapPosition}
+          zoom={13}
+          className="w-full h-96 rounded-lg"
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <MapPicker
+            position={mapPosition}
+            onPositionChange={async (newPos) => {
+              setMapPosition(newPos);
+              // Uaktualniamy tylko pola współrzędnych
               setEventData((prev) => ({
                 ...prev,
-                e_street: revAddress.e_street || prev.e_street,
-                e_zip_code: revAddress.e_zip_code || prev.e_zip_code,
-                e_city: revAddress.e_city || prev.e_city,
-                e_country: revAddress.e_country || prev.e_country,
+                e_latitude: newPos.lat.toString(),
+                e_longitude: newPos.lng.toString(),
               }));
-            }
-          }}
-        />
-      </MapContainer>
+              // Wywołujemy reverse geocoding, aby uaktualnić pola adresowe
+              const revAddress = await reverseGeocode(newPos.lat, newPos.lng);
+              if (revAddress) {
+                setEventData((prev) => ({
+                  ...prev,
+                  e_street: revAddress.e_street || prev.e_street,
+                  e_zip_code: revAddress.e_zip_code || prev.e_zip_code,
+                  e_city: revAddress.e_city || prev.e_city,
+                  e_country: revAddress.e_country || prev.e_country,
+                }));
+              }
+            }}
+          />
+        </MapContainer>
 
-      <button
-        type="submit"
-        onClick={handleSubmit}
-        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-        disabled={isValidatingAddress}
-      >
-        {isValidatingAddress ? "Validating Address..." : "Next"}
-      </button>
-      <button
-        onClick={() => navigate(-1)}
-        className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition"
-      >
-        Back
-      </button>
+        <div className="flex justify-center mt-8">
+          <button type="submit" className=" btn-primary">
+            Next
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

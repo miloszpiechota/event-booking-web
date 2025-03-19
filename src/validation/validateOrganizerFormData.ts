@@ -1,10 +1,24 @@
+import { OrganizerData } from "../../context/FormDataContext.tsx";
+type OrganizerErrors = {
+  u_first_name?: string;
+  u_last_name?: string;
+  u_contact_phone?: string;
+  u_contact_email?: string;
+  u_contact_info?: string;
+  u_apartment_number?: string;
+  u_street?: string;
+  u_city?: string;
+  u_country?: string;
+  u_zip_code?: string;
+  u_birth_date?: string;
+};
 const validDomains = [
     "gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com",
     "wp.pl", "onet.pl", "interia.pl", "o2.pl", "zoho.com", "protonmail.com"
   ];
   
-  export const validateOrganizerFormData = (organizerData) => {
-    let newErrors = {};
+  export const validateOrganizerFormData = (organizerData: OrganizerData) => {
+    let newErrors: OrganizerErrors = {};
   
     if (!organizerData.u_first_name.trim()) {
       newErrors.u_first_name = "First name is required";

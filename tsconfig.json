@@ -6,8 +6,15 @@
   ],
   
     "compilerOptions": {
-      "lib": ["dom", "esnext"]
-    }
+      "lib": ["dom", "esnext"],
+      "esModuleInterop": true,
+      "allowImportingTsExtensions": true,//this works only with below noEmit set to true
+  "noEmit": true,
+    
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx"
+    },
+    
   
   
 }

@@ -4,35 +4,18 @@ import { v4 as uuidv4 } from "uuid";
 import QRCode from "react-qr-code";
 import validateEventTicketFormData from "../validation/validateEventTicketFormData.ts";
 import { useFormData } from "../../context/FormDataContext.tsx";
-
+import { generateQrCode } from "../api/generateQrCode.ts";
 const EventTicketForm = () => {
   const navigate = useNavigate();
   const { ticketData, setTicketData } = useFormData();
   const [errors, setErrors] = useState({});
   const [qrCodeValue, setQrCodeValue] = useState("");
 
-  // Funkcja do generowania "bezpiecznego" tokenu
-  // UWAGA: W prawdziwej aplikacji token należy generować na serwerze!
-  const generateTicketToken = (data) => {
-    const payload = {
-      ticketId: uuidv4(),
-      ticketName: data.t_ticket_name,
-      eventId: data.t_event_id, // załóżmy, że masz identyfikator wydarzenia w danych formularza
-      issuedAt: Date.now(),
-    };
-    // Na potrzeby demo używamy btoa do "zakodowania" payloadu.
-    // W produkcji użyj JWT lub innego mechanizmu z podpisem cyfrowym.
-    return btoa(JSON.stringify(payload));
-  };
-
   useEffect(() => {
     if (ticketData.t_ticket_name) {
-      // Generujemy token zabezpieczający dane biletu
-      const token = generateTicketToken(ticketData);
-      // Link zawiera token, a dedykowany endpoint zweryfikuje token i zwróci obraz QR
-      const qrLink = `https://goEventApp.com/ticket?token=${token}`;
+      // Używamy funkcji generateQrCode, aby wygenerować token i link do QR Code
+      const { token, qrLink } = generateQrCode(ticketData);
       setQrCodeValue(qrLink);
-      // Zapisujemy token w danych biletu, aby móc później go wykorzystać
       setTicketData((prev) => ({ ...prev, t_qr_code: token }));
     }
   }, [ticketData.t_ticket_name]);
@@ -53,10 +36,13 @@ const EventTicketForm = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+    <div className="max-w-2xl bg-black/40 backdrop-blur-lg mx-auto p-6 shadow-md rounded-lg mt-6 text-white">
+      <button onClick={() => navigate(-1)} className="btn-back">
+        &larr; Back
+      </button>
       <h1 className="text-2xl font-bold mb-4">Complete your event data:</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <h2 className="text-xl font-semibold mt-6">Event Ticket Data:</h2>
+        <h2 className="h2-primary">Event Ticket Data:</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block font-semibold">Event Ticket Name:</label>
@@ -64,6 +50,7 @@ const EventTicketForm = () => {
               type="text"
               name="t_ticket_name"
               onChange={handleChange}
+              placeholder="Event Ticket Name"
               value={ticketData.t_ticket_name}
               className="w-full p-2 border rounded"
             />
@@ -72,11 +59,12 @@ const EventTicketForm = () => {
             )}
           </div>
           <div>
-            <label className="block font-semibold">Max Quantity:</label>
+            <label className="block font-semibold">Number Of Tickets:</label>
             <input
               type="text"
               name="t_quantity"
               onChange={handleChange}
+              placeholder="1"
               value={ticketData.t_quantity}
               className="w-full p-2 border rounded"
             />
@@ -86,7 +74,9 @@ const EventTicketForm = () => {
           </div>
         </div>
 
-        <h2 className="text-xl font-semibold mt-6">QR Code:</h2>
+        <h2 className="h2-primary mt-5">
+          Your QR Code for Tickets will be generated here:
+        </h2>
         <div className="flex flex-col items-center">
           {qrCodeValue ? (
             <QRCode value={qrCodeValue} size={150} className="mt-2" />
@@ -99,12 +89,13 @@ const EventTicketForm = () => {
             type="text"
             name="t_qr_code"
             value={qrCodeValue}
+            placeholder="Your QR Code URL"
             readOnly
-            className="w-full p-2 border rounded mt-2 text-center bg-gray-100"
+            className="w-full p-2 border rounded mt-2 text-center  bg-black/1 backdrop-blur-lg mt-10 mb-5"
           />
         </div>
 
-        <h2 className="text-xl font-semibold mt-6">Ticket Pricing:</h2>
+        <h2 className="h2-primary">Ticket Pricing:</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block font-semibold">Single Ticket Price:</label>
@@ -134,17 +125,8 @@ const EventTicketForm = () => {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-        >
+        <button type="submit" className="btn-primary">
           Next
-        </button>
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition"
-        >
-          Back
         </button>
       </form>
     </div>
