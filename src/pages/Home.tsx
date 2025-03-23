@@ -1,10 +1,10 @@
 import React from "react";
 import Header from "../components/Header.tsx";
 import SearchBar from "../components/SearchBar.tsx";
-import EventList from "../components/EventList.tsx";
+import EventList from "../components/EventListV.tsx";
 import backgroundImage from "../assets/background3.webp";
 import EventMainCard from "../components/EventMainCard.tsx";
-import EventList2 from "../components/EventList2.tsx";
+import EventList2 from "../components/EventListH.tsx";
 
 function Home() {
   return (

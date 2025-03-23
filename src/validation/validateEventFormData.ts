@@ -1,7 +1,27 @@
 // src/utils/validateFormData.js
 
-export const validateEventFormData = (data) => {
-    const errors = {};
+import { EventData } from "../api/payment.ts";
+
+interface EventFormErrors {
+    e_event_name?: string;
+    e_short_descryp?: string;
+    e_long_descryp?: string;
+    e_image_url?: string;
+    e_apartment_number?: string;
+    e_street?: string;
+    e_city?: string;
+    e_country?: string;
+    e_zip_code?: string;
+    e_latitude?: string;
+    e_longitude?: string;
+    e_start_date?: string;
+    e_end_date?: string;
+
+    
+}
+
+export const validateEventFormData = (data:EventData): EventFormErrors => {
+    const errors: EventFormErrors = {};
     const now = new Date();
     now.setSeconds(0, 0); // usuwamy sekundy dla precyzyjnej walidacji
   
@@ -21,21 +41,19 @@ export const validateEventFormData = (data) => {
       errors.e_image_url = "Image URL is required";
   
     // Walidacja adresu – ulica, numer, kod, miasto, kraj
-    if (!data.e_street.trim()) {
-      errors.e_street = "Street is required";
-    }
+
     if (!data.e_apartment_number.trim()) {
       errors.e_apartment_number = "Apartment number is required";
     } else if (!/^\d+(\/\d+)?$/.test(data.e_apartment_number.trim())) {
-      errors.e_apartment_number = "Invalid apartment number format (e.g. 12/2)";
+      errors.e_apartment_number = "Invalid apartment number format";
     }
-    if (!data.e_zip_code.trim()) {
-        errors.e_zip_code = "Zip code is required";
-      } else if (!/^[A-Za-z0-9 ]+$/.test(data.e_zip_code)) {
-        errors.e_zip_code = "Invalid zip code format (only letters, digits and spaces allowed)";
-      }
-      
-      
+  
+    if (!data.e_street.trim()) {
+      errors.e_street = "Street is required";
+    } else if (data.e_street.trim().length > 100) {
+      errors.e_street = "Street must not exceed 100 characters";
+    }
+  
     if (!data.e_city.trim()) {
       errors.e_city = "City is required";
     } else if (!/^[A-Za-z\s-]+$/.test(data.e_city.trim())) {
@@ -43,6 +61,7 @@ export const validateEventFormData = (data) => {
     } else if (data.e_city.trim().length > 50) {
       errors.e_city = "City must not exceed 50 characters";
     }
+  
     if (!data.e_country.trim()) {
       errors.e_country = "Country is required";
     } else if (!/^[A-Za-z\s-]+$/.test(data.e_country.trim())) {
@@ -50,6 +69,15 @@ export const validateEventFormData = (data) => {
     } else if (data.e_country.trim().length > 50) {
       errors.e_country = "Country must not exceed 50 characters";
     }
+  
+    if (!data.e_zip_code.trim()) {
+      errors.e_zip_code = "Zip code is required";
+    } else if (
+      !(/^\d{2}-\d{3}$/.test(data.e_zip_code.trim()) || /^\d{5}(-\d{4})?$/.test(data.e_zip_code.trim()))
+    ) {
+      errors.e_zip_code = "Invalid zip code format. Please use the appropriate format: 23-123 (Poland), 12345 (USA), 12345-6789 (USA), or 12345 (Germany)";
+    }
+   
   
     // Walidacja współrzędnych
     if (!data.e_latitude.trim())

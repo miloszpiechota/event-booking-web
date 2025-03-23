@@ -52,9 +52,12 @@ const validDomains = [
       }
     }
   
-    if (organizerData.u_contact_info.trim().length > 300) {
+    if (!organizerData.u_contact_info.trim()) {
+      newErrors.u_contact_info = "Contact info is required";
+    } else if (organizerData.u_contact_info.trim().length > 300) {
       newErrors.u_contact_info = "Contact info must not exceed 300 characters";
     }
+    
   
     if (!organizerData.u_apartment_number.trim()) {
       newErrors.u_apartment_number = "Apartment number is required";
@@ -86,9 +89,12 @@ const validDomains = [
   
     if (!organizerData.u_zip_code.trim()) {
       newErrors.u_zip_code = "Zip code is required";
-    } else if (!/^[A-Za-z0-9]{2,3}-?[A-Za-z0-9]{3,4}$/.test(organizerData.u_zip_code.trim()) && !/^\d{5}(-\d{4})?$/.test(organizerData.u_zip_code.trim())) {
+    } else if (
+      !(/^\d{2}-\d{3}$/.test(organizerData.u_zip_code.trim()) || /^\d{5}(-\d{4})?$/.test(organizerData.u_zip_code.trim()))
+    ) {
       newErrors.u_zip_code = "Invalid zip code format. Please use the appropriate format: 23-123 (Poland), 12345 (USA), 12345-6789 (USA), or 12345 (Germany)";
     }
+    
     
     if (!organizerData.u_birth_date) {
       newErrors.u_birth_date = "Date of birth is required";

@@ -1,5 +1,5 @@
 import React from "react";
-import EventCard from "../components/EventCard.tsx";
+import EventCard from "./EventCardV.tsx";
 import { useEvents } from "../../context/EventContext.tsx"; // Importujemy hook kontekstu
 
 const EventList = () => {

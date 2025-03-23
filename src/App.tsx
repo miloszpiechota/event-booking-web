@@ -22,6 +22,7 @@ function App() {
     <Routes>
       <Route path="/auth" element={<Auth />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/" element={<Home />} />
       <Route path="/create" element={<CreateEvent />} />
       <Route path="/event-form" element={<EventForm />} />
       <Route path="/event-ticket-form" element={<EventTicketForm />} />

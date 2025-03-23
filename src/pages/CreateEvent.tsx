@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { validateAddress } from "../validation/validateAddress.ts";
+import { validateAddress } from "../validation/findAddress.ts";
 import { validateOrganizerFormData } from "../validation/validateOrganizerFormData.ts";
 import { useFormData } from "../../context/FormDataContext.tsx";
 

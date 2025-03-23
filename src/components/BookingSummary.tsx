@@ -1,7 +1,7 @@
 // src/components/BookingSummary.tsx
 import React, { useContext, useEffect, useState } from "react";
 import { BookingContext } from "../../context/BookingContext.tsx";
-import { convertDateTime } from "../api/convertDateTime.ts";
+import { formatDateTime } from "../api/formatDateTime.ts";
 import { fetchPaymentMethod } from "../api/fetchPaymentMethod.ts";
 import { handlePayment, TicketType, EventData } from "../api/payment.ts";
 
@@ -40,7 +40,7 @@ function BookingSummary() {
     loadPaymentMethods();
   }, []);
 
-  const { formattedStartDate, formattedEndDate } = convertDateTime(
+  const { formattedStartDate, formattedEndDate } = formatDateTime(
     event.start_date,
     event.end_date
   );

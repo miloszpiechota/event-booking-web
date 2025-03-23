@@ -35,6 +35,24 @@ const EventMainCard: React.FC = () => {
     }
   };
 
+  // const customIcon = new L.Icon({
+  //   iconUrl: "https://example.com/custom-marker-icon.png", // URL do własnej ikony
+  //   iconSize: [32, 32], // Rozmiar ikony
+  //   iconAnchor: [16, 32], // Wskaźnik ikony
+  //   popupAnchor: [0, -32], // Wskaźnik okna popup
+  // });
+
+  // Tworzenie niestandardowej ikony z emoji 📍
+  const createCustomIcon = () => {
+    return L.divIcon({
+      className: "custom-icon",
+      html: "<span style='font-size: 24px;'>📍</span>", // Emoji 📍
+      iconSize: [50, 50], // Wymiary ikony
+      iconAnchor: [15, 30], // Punkt kotwiczenia ikony (na dole)
+      popupAnchor: [0, -30], // Pop-up pojawi się powyżej markera
+    });
+  };
+
   return (
     <div className="flex justify-center py-10">
       <Swiper
@@ -48,27 +66,26 @@ const EventMainCard: React.FC = () => {
         {/* 🔥 Slajd 1: Mapa z eventami */}
         <SwiperSlide>
           <div className="flex flex-col items-center justify-center p-4">
-            <div className="max-w-3xl w-full backdrop-blur-lg shadow-lg rounded-lg overflow-hidden flex flex-row">
-              <div className="relative w-2/3 min-h-[400px]">
+            <div className="max-w-3xl w-full backdrop-blur-lg shadow-lg rounded-lg overflow-hidden flex flex-col md:flex-row">
+              <div className="relative w-full md:w-2/3 min-h-[400px] p-4 bg-black">
                 <MapContainer
-                  center={[52.2298, 21.0122]} // Domyślnie Warszawa
-                  zoom={12}
-                  className="w-full h-full rounded-r-*"
+                  center={[52.2298, 21.0122]}
+                  zoom={5}
+                  className="w-full h-full rounded-lg"
                 >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   {loading ? (
-                    <p className="text-center text-white">
-                      Ładowanie wydarzeń...
-                    </p>
+                    <p className="text-center text-white">Ładowanie wydarzeń...</p>
                   ) : (
                     events.map((event) => (
                       <Marker
-                        key={event.id}
-                        position={[
-                          event.location.latitude,
-                          event.location.longitude,
-                        ]}
-                      >
+                      key={event.id}
+                      position={[
+                        event.location.latitude,
+                        event.location.longitude,
+                      ]}
+                      icon={createCustomIcon()} // Ustawienie niestandardowej ikony
+                    >
                         <Popup>
                           <strong>{event.name}</strong>
                           <br />
@@ -80,7 +97,7 @@ const EventMainCard: React.FC = () => {
                 </MapContainer>
               </div>
               {/* Prawa część z danymi wydarzenia */}
-              <div className="w-1/3 bg-black/40 backdrop-blur-lg text-white p-6 flex flex-col relative">
+              <div className="w-full md:w-1/3 bg-black text-white p-6 flex flex-col relative rounded-lg shadow-lg">
                 <h2 className="text-xl font-bold mb-2">Events Near You!</h2>
                 <p className="text-sm text-gray-200">
                   Odkryj wydarzenia w swojej okolicy
@@ -117,7 +134,7 @@ const EventMainCard: React.FC = () => {
               {/* Pokazanie popupa z detalami wydarzenia */}
               {activeEvent && (
                 <div className="popup-overlay">
-                  <div className="popup max-w-3xl w-full bg-black/30 backdrop-blur-lg rounded-lg overflow-hidden flex flex-row">
+                  <div className="popup max-w-3xl w-full bg-black/30 backdrop-blur-lg rounded-lg overflow-hidden flex flex-col md:flex-row">
                     {/* Sekcja obrazka */}
                     <div
                       className="relative w-full bg-cover bg-center min-h-[300px]"
