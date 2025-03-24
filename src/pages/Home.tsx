@@ -9,6 +9,7 @@ import CategorySlider from "../components/CategorySlider.tsx";
 
 function Home() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   return (
     <>
@@ -45,10 +46,12 @@ function Home() {
 
       <MainCard />
       <EventList2 />
-      <CategorySlider />
+
+      {/* Przekazujemy funkcję do ustawiania kategorii */}
+      <CategorySlider onCategorySelect={setSelectedCategory} />
 
       <div className="mt-1">
-        <EventList searchTerm={searchTerm} />
+        <EventList searchTerm={searchTerm} selectedCategory={selectedCategory} />
       </div>
     </>
   );

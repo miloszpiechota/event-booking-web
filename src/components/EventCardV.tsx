@@ -30,8 +30,6 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     event.end_date
   );
 
-
-
   return (
     <div
       className="max-w-3xl w-full backdrop-blur-lg shadow-lg rounded-lg overflow-hidden flex cursor-pointer transform transition-transform hover:scale-105 flex-col md:flex-row"
@@ -44,7 +42,9 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
         <div className="relative z-10 p-6 flex flex-col h-full justify-end">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">{event.name}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+            {event.name}
+          </h2>
           <p className="text-sm sm:text-base text-gray-200">
             Creator:
             {event.event_organizer?.first_name}{" "}
@@ -60,16 +60,15 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       <div className="w-full md:w-1/3 bg-black text-white p-6 flex flex-col relative rounded-lg shadow-lg">
         {/* Kontener dla daty */}
         <div className="w-full p-2 bg-gray-800 rounded-lg shadow-md flex flex-col items-center justify-center mb-4">
-        <p className="text-3xl font-extrabold text-red-600 leading-tight">
-  {formattedStartDate.formattedDay}
-</p>
-<p className="text-md uppercase font-semibold text-gray-300">
-  {formattedStartDate.formattedMonth}
-</p>
-<p className="text-sm font-medium text-gray-400">
-  {formattedStartDate.formattedYear}
-</p>
-
+          <p className="text-3xl font-extrabold text-red-600 leading-tight">
+            {formattedStartDate.formattedDay}
+          </p>
+          <p className="text-md uppercase font-semibold text-gray-300">
+            {formattedStartDate.formattedMonth}
+          </p>
+          <p className="text-sm font-medium text-gray-400">
+            {formattedStartDate.formattedYear}
+          </p>
         </div>
 
         {/* Kontener lokalizacji */}
