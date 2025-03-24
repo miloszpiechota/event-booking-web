@@ -3,8 +3,9 @@ import Header from "../components/Header.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import EventList from "../components/EventListV.tsx";
 import backgroundImage from "../assets/background3.webp";
-import EventMainCard from "../components/EventMainCard.tsx";
+import MainCard from "../components/MainCard.tsx";
 import EventList2 from "../components/EventListH.tsx";
+import CategorySlider from "../components/CategorySlider.tsx";
 
 function Home() {
   return (
@@ -50,10 +51,11 @@ function Home() {
       </div>
 
       {/* Główna karta wydarzenia */}
-      <EventMainCard />
+      <MainCard />
 
       {/* Karuzela wydarzeń */}
       <EventList2 />
+      <CategorySlider />
 
       {/* Lista wydarzeń */}
       <div className="mt-1">

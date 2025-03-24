@@ -25,13 +25,7 @@ const EventCard2: React.FC<EventCard2Props> = ({ event }) => {
   const navigate = useNavigate();
 
   // Formatowanie daty
-  const {
-    formattedStartDate,
-    formattedEndDate,
-    formattedDay,
-    formattedMonth,
-    formattedYear,
-  } = formatDateTime(event.start_date, event.end_date);
+  const { formattedStartDate, formattedEndDate } = formatDateTime(event.start_date, event.end_date);
 
   return (
     <div className="flex flex-col w-full max-w-xs bg-black/40 backdrop-blur-lg rounded-2xl overflow-hidden shadow-lg">
@@ -50,15 +44,16 @@ const EventCard2: React.FC<EventCard2Props> = ({ event }) => {
         <div className="flex flex-col md:flex-row w-full mb-4">
           {/* Kontener dla daty */}
           <div className="w-full md:w-1/3 p-2 bg-gray-800 rounded-lg shadow-md flex flex-col items-center justify-center mb-4 md:mb-0 md:mr-2">
-            <p className="text-3xl font-extrabold text-red-600 leading-tight">
-              {formattedDay}
-            </p>
-            <p className="text-md uppercase font-semibold text-gray-300">
-              {formattedMonth}
-            </p>
-            <p className="text-sm font-medium text-gray-400">
-              {formattedYear}
-            </p>
+          <p className="text-3xl font-extrabold text-red-600 leading-tight">
+  {formattedStartDate.formattedDay}
+</p>
+<p className="text-md uppercase font-semibold text-gray-300">
+  {formattedStartDate.formattedMonth}
+</p>
+<p className="text-sm font-medium text-gray-400">
+  {formattedStartDate.formattedYear}
+</p>
+
           </div>
 
           {/* Kontener lokalizacji */}
