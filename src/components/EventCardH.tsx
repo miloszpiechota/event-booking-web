@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { formatDateTime } from "../api/formatDateTime.ts"; // Funkcja do formatowania daty
+import { useTicketAvailability } from "../../context/TicketAvailabilityContext.tsx";
+import soldOutImage from "../assets/sold-out.png"; // Importuj obrazek "sold out"
 
 interface Event {
   id: string;
@@ -22,7 +24,13 @@ interface EventCard2Props {
 }
 
 const EventCard2: React.FC<EventCard2Props> = ({ event }) => {
+  const { availableTickets } = useTicketAvailability();
   const navigate = useNavigate();
+  // Sprawdzamy, czy event jest wyprzedany
+  const isEventSoldOut =
+    event?.event_ticket?.quantity !== undefined &&
+    event.event_ticket.quantity <= 0;
+  const isSoldOut = isEventSoldOut || availableTickets <= 0;
 
   // Formatowanie daty
   const { formattedStartDate, formattedEndDate } = formatDateTime(
@@ -33,12 +41,32 @@ const EventCard2: React.FC<EventCard2Props> = ({ event }) => {
   return (
     <div className="flex flex-col w-full max-w-xs bg-black/40 backdrop-blur-lg rounded-2xl overflow-hidden shadow-lg">
       {/* Obrazek */}
+      {/* {isSoldOut && (
+        <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+          <p className="text-white text-lg font-bold">🎟️ WYPRZEDANE</p>
+        </div>
+         <div className="h-48 inset-0 w-full bg-black bg-opacity-70">
+         <img
+           src={event.image_url}
+           alt={event.name}
+           className="w-full h-full object-cover bg-black bg-opacity-70"
+         />
+       </div>
+      )} */}
       <div className="h-48 w-full">
-        <img
-          src={event.image_url}
-          alt={event.name}
-          className="w-full h-full object-cover"
-        />
+        {isSoldOut ? (
+          <img
+            src={soldOutImage}
+            alt="Sold Out"
+            className="w-full h-full object-cover justify-center items-center bg-black bg-opacity-70"
+          />
+        ) : (
+          <img
+            src={event.image_url}
+            alt={event.name}
+            className="w-full h-full object-cover"
+          />
+        )}
       </div>
 
       {/* Sekcja szczegółów */}
@@ -83,10 +111,15 @@ const EventCard2: React.FC<EventCard2Props> = ({ event }) => {
 
         {/* Przycisk Explore */}
         <button
-          className="px-6 py-2 mt-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-300"
-          onClick={() => navigate(`/event/${event.id}`)} // Przykład nawigacji do strony wydarzenia
+          className={`px-6 py-2 mt-4 text-white font-semibold rounded-lg transition duration-300 ${
+            isSoldOut
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-red-600 hover:bg-red-700"
+          }`}
+          onClick={() => !isSoldOut && navigate(`/event/${event.id}`)}
+          disabled={isSoldOut}
         >
-          Explore
+          {isSoldOut ? "WYPRZEDANE" : "Explore"}
         </button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { validateAddress } from "../validation/findAddress.ts";
+import { validateAddress } from "../validation/validateAddress.ts";
 import MapPicker from "./MapPicker.tsx";
 // Importujemy komponenty z react-leaflet
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";

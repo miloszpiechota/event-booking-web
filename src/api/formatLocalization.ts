@@ -1,8 +1,9 @@
-export const formatLocalization = (city: string, street: string, country: string,apartment_number:string) => {
-    return `
-${street}
- ${apartment_number}
-  ${city}
-  ${country}`;
+export const formatLocalization = (
+    street: string,
+    apartment_number: string,
+    city: string,
+    country: string
+  ) => {
+    return `${street} ${apartment_number} ${city} ${country}`;
   };
   

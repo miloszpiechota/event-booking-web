@@ -14,11 +14,13 @@ import ShowEvent from './pages/ShowEvent.tsx';
 import BookEvent from './pages/BookEvent.tsx';
 import PaymentForm from './components/PaymentForm.tsx';
 import TicketBox from './pages/TicketBox.tsx';
+import { TicketAvailabilityProvider } from "../context/TicketAvailabilityContext.tsx";
 function App() {
   return (
-
+<TicketAvailabilityProvider>
     <EventProvider>
     <FormDataProvider>
+      
     <Routes>
       <Route path="/auth" element={<Auth />} />
       <Route path="/home" element={<Home />} />
@@ -34,6 +36,7 @@ function App() {
     </Routes>
     </FormDataProvider>
     </EventProvider>
+    </TicketAvailabilityProvider>
     
   )
 }

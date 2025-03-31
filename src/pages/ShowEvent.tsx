@@ -5,7 +5,7 @@ import Header from "../components/Header.tsx";
 import "leaflet/dist/leaflet.css";
 import { formatDateTime } from "../api/formatDateTime.ts";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-
+import { formatLocalization } from "../api/formatLocalization.ts";
 const ShowEvent = () => {
   const { id } = useParams();
   const { events } = useEvents();
@@ -70,17 +70,17 @@ const ShowEvent = () => {
               {event.event_organizer.last_name}
             </p>
             <p className="text-gray-400">
-              {event.location.street_name}, {event.location.city_name},
-              {event.location.apartment_number}, {event.location.country_name},
-              {event.location.zip_code}
+              {formatLocalization(
+                event.location.street_name,
+                event.location.apartment_number,
+                event.location.city_name,
+                event.location.country_name
+              )}
             </p>
-            <button className="text-white underline hover:text-purple-400">
-              View Map
-            </button>
           </div>
 
           {/* Prawa strona: Informacje o wydarzeniu */}
-          <div className="w-full lg:w-2/5 bg-gray-900 p-6 rounded-xl shadow-lg text-white relative left-10 top-5">
+          <div className="w-full lg:w-2/5 bg-gray-800 p-6 rounded-xl shadow-lg text-white relative left-10 top-5">
             <h2 className="text-xl font-semibold mb-4">
               Start Date & End Date
             </h2>
@@ -168,8 +168,8 @@ const ShowEvent = () => {
             How can I contact the organizer with any question?
           </h3>
           <p className="text-gray-400">
-            Contact e-mail: {event.event_organizer.contact_email} 
-            </p>
+            Contact e-mail: {event.event_organizer.contact_email}
+          </p>
           <p className="text-gray-400">
             Contact info: {event.event_organizer.contact_info}
           </p>
@@ -191,13 +191,23 @@ const ShowEvent = () => {
                 position={[event.location.latitude, event.location.longitude]}
               >
                 <Popup>
-                  {event.location.street_name}, {event.location.city_name}
+                {formatLocalization(
+                event.location.street_name,
+                event.location.apartment_number,
+                event.location.city_name,
+                event.location.country_name
+              )}
                 </Popup>
               </Marker>
             </MapContainer>
           </div>
           <h2 className="text-lg font-semibold text-center">
-            {event.location.street_name}, {event.location.city_name}
+          {formatLocalization(
+                event.location.street_name,
+                event.location.apartment_number,
+                event.location.city_name,
+                event.location.country_name
+              )}
           </h2>
         </div>
       </div>

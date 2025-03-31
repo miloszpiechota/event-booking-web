@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FormSteps from "../components/FormSteps.tsx";
+
 
 import BookingDetails from "../components/BookingDetails.tsx";
 import BookingSummary from "../components/BookingSummary.tsx";
@@ -17,7 +17,7 @@ function BookEvent() {
   return (
     <BookingProvider event={event}>
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <FormSteps />
+        
 
         <div className="flex flex-col lg:flex-row lg:space-x-4">
           <div className="mb-4 lg:mb-0 lg:w-2/3">

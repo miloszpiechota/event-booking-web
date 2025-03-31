@@ -4,6 +4,7 @@ import { BookingContext } from "../../context/BookingContext.tsx";
 import EventCard from "./EventCardV.tsx";
 import validateBookingFormData from "../validation/validateBookingFormData.ts";
 import { useParams } from "react-router-dom";
+import { useTicketAvailability } from "../../context/TicketAvailabilityContext.tsx";
 function BookingDetails({ onNextStep }) {
   const {
     event,
@@ -23,11 +24,19 @@ function BookingDetails({ onNextStep }) {
     setTicketCount,
   } = useContext(BookingContext);
 
-
-  const { id } = useParams(); // ID wydarzenia
-  
+  const { id } = useParams(); // Event ID
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [touchedFields, setTouchedFields] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    phoneNumber: false,
+  });
+  const { availableTickets } = useTicketAvailability();
+// Sprawdzamy, czy event jest wyprzedany
+const isEventSoldOut = event?.event_ticket?.quantity <= 0;
+const isSoldOut = isEventSoldOut || availableTickets <= 0;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,16 +46,14 @@ function BookingDetails({ onNextStep }) {
       email,
       phoneNumber,
     });
-  
-    // Sprawdzenie, czy wybrano cenę biletu
+
     if (!selectedPrice) {
       validationErrors.selectedPrice = "You must select a ticket price.";
     }
-  
+
     setErrors(validationErrors);
     setIsFormValid(Object.keys(validationErrors).length === 0);
   }, [firstName, lastName, email, phoneNumber, selectedPrice]);
-  
 
   const handleSelectPrice = (price) => {
     setSelectedPrice(price);
@@ -59,27 +66,31 @@ function BookingDetails({ onNextStep }) {
     }
   };
 
-  const handleInputChange = (setter) => (e) => {
+  const handleInputChange = (setter, field) => (e) => {
     setter(e.target.value);
+    setTouchedFields((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleNext = (e) => {
     e.preventDefault();
     if (isFormValid) {
-      onNextStep(); // Przekazujemy do rodzica, by zmienić komponent na PaymentForm
+      onNextStep(); // Proceed to the next step
     }
   };
-  
+
   return (
     <div className="bg-white p-6 rounded-lg shadow w-full md:w-6/6">
+       {isSoldOut && (
+       
+          <p className="text-white text-lg font-bold">⚠ Brak dostępnych biletów</p>
+       
+      )}
       <EventCard event={event} />
 
-      <h2 className="text-2xl font-semibold mb-6 mt-6">
-        Enter your personal details
-      </h2>
+      <h2 className="text-2xl font-semibold mb-6 mt-6">Enter your personal details</h2>
 
       <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Lewa kolumna */}
+        {/* First Name Field */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             First Name
@@ -88,19 +99,19 @@ function BookingDetails({ onNextStep }) {
             type="text"
             placeholder="Maciej"
             value={firstName}
-            onChange={handleInputChange(setFirstName)}
+            onChange={handleInputChange(setFirstName, "firstName")}
             className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 ${
-              errors.firstName
+              touchedFields.firstName && errors.firstName
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-green-500"
             }`}
           />
-          {errors.firstName && (
+          {touchedFields.firstName && errors.firstName && (
             <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
           )}
         </div>
 
-        {/* Prawa kolumna */}
+        {/* Last Name Field */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             Last Name
@@ -109,19 +120,19 @@ function BookingDetails({ onNextStep }) {
             type="text"
             placeholder="Kuropatwa"
             value={lastName}
-            onChange={handleInputChange(setLastName)}
+            onChange={handleInputChange(setLastName, "lastName")}
             className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 ${
-              errors.lastName
+              touchedFields.lastName && errors.lastName
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-green-500"
             }`}
           />
-          {errors.lastName && (
+          {touchedFields.lastName && errors.lastName && (
             <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
           )}
         </div>
 
-        {/* Lewa kolumna */}
+        {/* Email Field */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             Email Address
@@ -130,19 +141,19 @@ function BookingDetails({ onNextStep }) {
             type="email"
             placeholder="example@email.com"
             value={email}
-            onChange={handleInputChange(setEmail)}
+            onChange={handleInputChange(setEmail, "email")}
             className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 ${
-              errors.email
+              touchedFields.email && errors.email
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-green-500"
             }`}
           />
-          {errors.email && (
+          {touchedFields.email && errors.email && (
             <p className="text-red-500 text-xs mt-1">{errors.email}</p>
           )}
         </div>
 
-        {/* Prawa kolumna */}
+        {/* Phone Number Field */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             Phone Number
@@ -162,27 +173,25 @@ function BookingDetails({ onNextStep }) {
               type="tel"
               placeholder="567 890 123"
               value={phoneNumber}
-              onChange={handleInputChange(setPhoneNumber)}
+              onChange={handleInputChange(setPhoneNumber, "phoneNumber")}
               className={`w-full border border-l-0 rounded-r px-3 py-2 focus:outline-none focus:ring-1 ${
-                errors.phoneNumber
+                touchedFields.phoneNumber && errors.phoneNumber
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-green-500"
               }`}
             />
           </div>
-          {errors.phoneNumber && (
+          {touchedFields.phoneNumber && errors.phoneNumber && (
             <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>
           )}
         </div>
 
-        {/* Nagłówek sekcji wyboru biletu zajmujący obie kolumny */}
+        {/* Ticket Section Header */}
         <div className="col-span-2">
-          <h2 className="text-2xl font-semibold mt-6 mb-4">
-            Choose your ticket
-          </h2>
+          <h2 className="text-2xl font-semibold mt-6 mb-4">Choose your ticket</h2>
         </div>
 
-        {/* Lewa kolumna – Select Ticket Pricing */}
+        {/* Left Column - Ticket Pricing */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             Select Ticket Pricing
@@ -192,13 +201,11 @@ function BookingDetails({ onNextStep }) {
               type="button"
               className={`w-full py-3 rounded-lg text-white font-bold ${
                 selectedPrice === event.event_ticket.ticket_pricing.ticket_price
-                  ? "bg-purple-600"
+                  ? "bg-red-600"
                   : "bg-gray-400"
               }`}
               onClick={() =>
-                handleSelectPrice(
-                  event.event_ticket.ticket_pricing.ticket_price
-                )
+                handleSelectPrice(event.event_ticket.ticket_pricing.ticket_price)
               }
             >
               Standard - {event.event_ticket.ticket_pricing.ticket_price} zł
@@ -208,13 +215,11 @@ function BookingDetails({ onNextStep }) {
               type="button"
               className={`w-full py-3 rounded-lg text-white font-bold ${
                 selectedPrice === event.event_ticket.ticket_pricing.vip_price
-                  ? "bg-purple-600"
+                  ? "bg-red-600"
                   : "bg-gray-400"
               }`}
               onClick={() =>
-                handleSelectPrice(
-                  event.event_ticket.ticket_pricing.vip_price
-                )
+                handleSelectPrice(event.event_ticket.ticket_pricing.vip_price)
               }
             >
               VIP - {event.event_ticket.ticket_pricing.vip_price} zł
@@ -222,7 +227,7 @@ function BookingDetails({ onNextStep }) {
           </div>
         </div>
 
-        {/* Prawa kolumna – Number of Tickets */}
+        {/* Right Column - Number of Tickets */}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1 uppercase">
             Number of Tickets
@@ -230,23 +235,24 @@ function BookingDetails({ onNextStep }) {
           <input
             type="number"
             min="1"
-            max={event.event_ticket.quantity}
+          // max={event.event_ticket.quantity}
+          max={isSoldOut ? 0 : availableTickets}
             value={ticketCount}
             onChange={handleTicketCountChange}
+            disabled={isSoldOut}
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-green-500"
           />
-          <p className="text-sm text-gray-500 mt-1">
-            Max available: {event.event_ticket.quantity}
-          </p>
+          {/* <p className="text-sm text-gray-500 mt-1">Max available: {event.event_ticket.quantity}</p> */}
+          <p className="text-sm text-gray-500 mt-1">Max available: {event.event_ticket.quantity}</p>
         </div>
 
-        {/* Przycisk Next */}
+        {/* Next Button */}
         <div className="col-span-2 mt-4">
           <button
             type="button"
             onClick={handleNext}
-            disabled={!isFormValid}
-            className="w-full bg-blue-600 text-white font-semibold py-3 rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
+            disabled={!isFormValid || isSoldOut}
+            className="w-full bg-red-600 text-white font-semibold py-3 rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
             Next
           </button>

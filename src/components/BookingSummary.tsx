@@ -1,4 +1,3 @@
-// src/components/BookingSummary.tsx
 import React, { useContext, useEffect, useState } from "react";
 import { BookingContext } from "../../context/BookingContext.tsx";
 import { formatDateTime } from "../api/formatDateTime.ts";
@@ -125,11 +124,15 @@ function BookingSummary() {
 
         <div className="flex justify-between">
           <span className="text-gray-600">Start Date:</span>
-          <span className="font-semibold">{formattedStartDate}</span>
+          <span className="font-semibold">
+            {formattedStartDate.formattedDate} {formattedStartDate.formattedTime}
+          </span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">End Date:</span>
-          <span className="font-semibold">{formattedEndDate}</span>
+          <span className="font-semibold">
+            {formattedEndDate?.formattedDate} {formattedEndDate?.formattedTime}
+          </span>
         </div>
 
         {renderTicketType()}
@@ -167,6 +170,7 @@ function BookingSummary() {
         <button
           disabled={!isFormValid}
           onClick={onPaymentClick}
+          
           className={`w-full ${
             isFormValid ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
           } text-white font-semibold py-3 rounded-lg transition`}

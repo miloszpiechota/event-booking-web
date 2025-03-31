@@ -11,6 +11,10 @@
   color: white !important;
 }
 
+.custom-day-picker .rdp-month {
+  color: white !important;
+}
+
 /* Stylowanie dla zaznaczonych dni */
 .custom-day-picker .highlighted-day {
   background-color: #33b1ff !important; /* Kolor tła dla zaznaczonych dni */

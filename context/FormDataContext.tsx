@@ -49,8 +49,9 @@ interface FormDataContextType {
   eventData: EventData;
   ticketData: TicketData;
   setOrganizerData: (data: OrganizerData) => void;
-  setEventData: (data: EventData) => void;
+  //setEventData: (data: EventData) => void;
   setTicketData: (data: TicketData) => void;
+  setEventData: React.Dispatch<React.SetStateAction<EventData>>;
 }
 
 const FormDataContext = createContext<FormDataContextType | undefined>(undefined);

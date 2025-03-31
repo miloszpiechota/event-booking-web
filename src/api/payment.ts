@@ -1,5 +1,6 @@
 // src/api/payment.ts
 import { getUserToken, getUserId } from "../api/auth.ts";
+import { updateTicketQuantity } from "../api/updateTicketQuantity.ts"; // Import funkcji aktualizującej bilety
 
 interface TicketOrder {
   event_ticket_id: number;
@@ -109,6 +110,9 @@ export async function handlePayment(params: PaymentParams): Promise<void> {
       window.alert("Server error. Please try again.");
       return;
     }
+
+    // **📉 Aktualizacja ilości biletów po udanej płatności**
+    await updateTicketQuantity(event.event_ticket.id, ticketCount);
 
     window.alert("Order placed successfully!");
   } catch (error) {
