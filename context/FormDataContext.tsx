@@ -28,8 +28,8 @@ export interface EventData {
   e_zip_code: string;
   e_city: string;
   e_country: string;
-  e_latitude: string;
-  e_longitude: string;
+  e_latitude: number;
+  e_longitude: number;
   e_start_time: string;
   e_end_time: string;
   e_event_category_id: string;
@@ -91,8 +91,8 @@ export const FormDataProvider = ({ children }: { children: ReactNode }) => {
     e_zip_code: "",
     e_city: "",
     e_country: "",
-    e_latitude: "",
-    e_longitude: "",
+    e_latitude: 0,
+    e_longitude: 0,
     e_start_time: "",
     e_end_time: "",
     e_event_category_id: "",

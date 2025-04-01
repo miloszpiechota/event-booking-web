@@ -30,7 +30,7 @@ interface EventTicket {
   ticket_pricing: EventTicketPricing;
 }
 
-export interface EventData {
+export interface EventFormData {
   event_ticket: EventTicket;
   start_date: string;
   end_date: string;

@@ -12,10 +12,12 @@ interface EventFormErrors {
     e_city?: string;
     e_country?: string;
     e_zip_code?: string;
-    e_latitude?: string;
-    e_longitude?: string;
+    e_latitude?: number;
+    e_longitude?: number;
     e_start_date?: string;
     e_end_date?: string;
+    e_event_category?: string;
+    e_event_category_id?: string;
 
     
 }
@@ -31,14 +33,36 @@ export const validateEventFormData = (data:EventData): EventFormErrors => {
     } else if (data.e_event_name.trim().length > 100) {
       errors.e_event_name = "Event name must not exceed 100 characters";
     }
+
+    // Walidacja wyboru kategorii wydarzenia
+  if (!data.e_event_category_id || !data.e_event_category_id.trim()) {
+    errors.e_event_category = "Event category is required";
+  }
   
     // Walidacja opisów
     if (!data.e_short_descryp.trim())
       errors.e_short_descryp = "Short description is required";
     if (!data.e_long_descryp.trim())
       errors.e_long_descryp = "Long description is required";
-    if (!data.e_image_url.trim())
+
+    // if (!data.e_image_url.trim())
+    //   errors.e_image_url = "Image URL is required";
+    if (!data.e_image_url.trim()) {
       errors.e_image_url = "Image URL is required";
+    } else {
+      try {
+        const urlObj = new URL(data.e_image_url);
+        const pathname = urlObj.pathname;
+        // Wzorzec sprawdzający typowe rozszerzenia obrazów
+        const imagePattern = /\.(jpeg|jpg|gif|png|bmp|webp)$/i;
+        if (!imagePattern.test(pathname)) {
+          errors.e_image_url = "Image URL not found";
+        }
+      } catch (e) {
+        errors.e_image_url = "Image URL not found";
+      }
+    }
+    
   
     // Walidacja adresu – ulica, numer, kod, miasto, kraj
 
@@ -80,10 +104,18 @@ export const validateEventFormData = (data:EventData): EventFormErrors => {
    
   
     // Walidacja współrzędnych
-    if (!data.e_latitude.trim())
-      errors.e_latitude = "Latitude is required";
-    if (!data.e_longitude.trim())
-      errors.e_longitude = "Longitude is required";
+    // 🔥 **Zmiana walidacji dla e_latitude i e_longitude** (teraz liczby)
+  if (typeof data.e_latitude !== "number" || isNaN(data.e_latitude)) {
+    errors.e_latitude = "Latitude must be a valid number";
+  } else if (data.e_latitude < -90 || data.e_latitude > 90) {
+    errors.e_latitude = "Latitude must be between -90 and 90";
+  }
+
+  if (typeof data.e_longitude !== "number" || isNaN(data.e_longitude)) {
+    errors.e_longitude = "Longitude must be a valid number";
+  } else if (data.e_longitude < -180 || data.e_longitude > 180) {
+    errors.e_longitude = "Longitude must be between -180 and 180";
+  }
   
     // Sprawdzenie, czy podano datę i godzinę rozpoczęcia oraz zakończenia
   if (!data.e_start_date || !data.e_start_time) {

@@ -2,16 +2,35 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { validateAddress } from "../validation/validateAddress.ts";
 import MapPicker from "./MapPicker.tsx";
-// Importujemy komponenty z react-leaflet
+
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+
 import "leaflet/dist/leaflet.css";
 import { fetchEventCategory } from "../api/fetchEventCategory.ts";
 import { validateEventFormData } from "../validation/validateEventFormData.ts";
 import { reverseGeocode } from "../api/reverseGeoCode.ts";
 import { useFormData } from "../../context/FormDataContext.tsx";
+interface EventFormData {
+  e_event_name: string;
+  e_event_category: string;
+  e_start_date: string;
+  e_end_date: string;
+  e_short_descryp: string;
+  e_long_descryp: string;
+  e_image_url: string;
+  e_street: string;
+  e_apartment_number?: string;
+  e_zip_code: string;
+  e_city: string;
+  e_country: string;
+  e_latitude: number;
+  e_longitude: number;
+}
+
 const EventForm = () => {
   const navigate = useNavigate();
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Partial<EventFormData>>({});
+
   const [isValidatingAddress, setIsValidatingAddress] = useState(false);
   // Stan przechowujący aktualną pozycję markera (domyślnie ustawiamy na przykładowe współrzędne)
   const [mapPosition, setMapPosition] = useState({
@@ -49,8 +68,8 @@ const EventForm = () => {
           setMapPosition(geo);
           setEventData((prev) => ({
             ...prev,
-            e_latitude: geo.lat.toString(),
-            e_longitude: geo.lng.toString(),
+            e_latitude: Number(geo.lat), // Konwersja do liczby
+            e_longitude: Number(geo.lng),
           }));
         }
       })();
@@ -63,8 +82,17 @@ const EventForm = () => {
   ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEventData({ ...eventData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setEventData((prev) => ({
+      ...prev,
+      [name]:
+        name === "e_latitude" || name === "e_longitude"
+          ? parseFloat(value) || 0 // Konwersja na liczbę
+          : value,
+    }));
   };
+
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCategoryId = e.target.value;
     const selectedCategory = categories.find(
@@ -81,7 +109,6 @@ const EventForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Używamy funkcji walidacyjnej, aby sprawdzić, czy wszystkie wymagane pola (w tym adres) są uzupełnione
     const errorsObj = validateEventFormData(eventData);
     if (Object.keys(errorsObj).length > 0) {
       setErrors(errorsObj);
@@ -90,7 +117,6 @@ const EventForm = () => {
     setErrors({});
 
     setIsValidatingAddress(true);
-    // Geokodujemy adres – pobieramy współrzędne
     const geo = await validateAddress(
       eventData.e_street,
       eventData.e_city,
@@ -99,7 +125,7 @@ const EventForm = () => {
     );
     setIsValidatingAddress(false);
 
-    if (!geo) {
+    if (!geo || !geo.lat || !geo.lng) {
       setErrors((prev) => ({
         ...prev,
         e_street: "Invalid address. Please check your details.",
@@ -107,11 +133,10 @@ const EventForm = () => {
       return;
     }
 
-    // Uaktualniamy pola latitude i longitude oraz pozycję markera
     setEventData((prev) => ({
       ...prev,
-      e_latitude: geo.lat.toString(),
-      e_longitude: geo.lng.toString(),
+      e_latitude: geo.lat, // Bez konwersji na string!
+      e_longitude: geo.lng,
     }));
     setMapPosition(geo);
 
@@ -157,7 +182,7 @@ const EventForm = () => {
               name="e_event_category_id"
               onChange={handleCategoryChange}
               value={eventData.e_event_category_id}
-              className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
+              className="w-full p-2 border rounded bg-gray-800 focus:ring-green-500 text-white"
             >
               <option value="">Select a category</option>
               {categories.map((category) => (
@@ -183,12 +208,13 @@ const EventForm = () => {
               id="e_start_date"
               name="e_start_date"
               onChange={handleChange}
-              placeholder="DD-MM-YYYY"
+              placeholder="00:00"
               value={eventData.e_start_date}
               className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
             {errors.e_start_date && (
               <p className="text-red-500 text-sm">{errors.e_start_date}</p>
+              
             )}
           </div>
           <div>
@@ -216,6 +242,7 @@ const EventForm = () => {
               id="e_end_date"
               name="e_end_date"
               onChange={handleChange}
+              placeholder={"00:00"}
               value={eventData.e_end_date}
               className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
@@ -232,6 +259,7 @@ const EventForm = () => {
               id="e_end_time"
               name="e_end_time"
               onChange={handleChange}
+              placeholder="00:00"
               value={eventData.e_end_time}
               className="w-full p-2 border rounded bg-transparent placeholder-white/50 focus:ring-green-500"
             />
@@ -427,14 +455,16 @@ const EventForm = () => {
           You can select Your Event location on the map:
         </h2>
         <MapContainer
-          center={mapPosition}
+          style={{ height: "400px", width: "100%" }}
           zoom={13}
-          className="w-full h-96 rounded-lg"
+          className="map-container"
+          center={[mapPosition.lat, mapPosition.lng]} // Konwersja na tablicę [lat, lng]
         >
           <TileLayer
             attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+
           <MapPicker
             position={mapPosition}
             onPositionChange={async (newPos) => {
@@ -442,8 +472,8 @@ const EventForm = () => {
               // Uaktualniamy tylko pola współrzędnych
               setEventData((prev) => ({
                 ...prev,
-                e_latitude: newPos.lat.toString(),
-                e_longitude: newPos.lng.toString(),
+                e_latitude: newPos.lat,
+                e_longitude: newPos.lng,
               }));
               // Wywołujemy reverse geocoding, aby uaktualnić pola adresowe
               const revAddress = await reverseGeocode(newPos.lat, newPos.lng);
@@ -454,6 +484,8 @@ const EventForm = () => {
                   e_zip_code: revAddress.e_zip_code || prev.e_zip_code,
                   e_city: revAddress.e_city || prev.e_city,
                   e_country: revAddress.e_country || prev.e_country,
+                  e_apartment_number:
+                    revAddress.e_apartment_number || prev.e_apartment_number,
                 }));
               }
             }}
