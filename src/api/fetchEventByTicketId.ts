@@ -1,10 +1,11 @@
-import { supabase } from '../../supabaseClient.ts';
+// fetchEventByTicketId.ts
+import { supabase } from "../../supabaseClient.ts";
 
-export const fetchOrders = async () => {
+export const fetchEventByTicketId = async (eventTicketId: string) => {
   const { data, error } = await supabase
-    .from('event')
+    .from("event")
     .select(`
-      id,
+       id,
       name,
       short_description,
       long_description,
@@ -24,24 +25,18 @@ export const fetchOrders = async () => {
         longitude
       ),
       event_category:category_id (name),
-      event_ticket:event_ticket_id (
-      id,
-        name,
-        quantity,
-        qr_code,
-        ticket_pricing:ticket_pricing_id (
-          id,
-          ticket_price, 
-          vip_price, 
-          fee
-        )
-      )
+      event_ticket:event_ticket_id(id)
     `);
 
   if (error) {
-    console.error('Error fetching events:', error);
-    return [];
+    console.error("Error fetching events:", error);
+    return null;
   }
 
-  return data;
+  // Znajdź event, który ma event_ticket.id === eventTicketId
+  const matchedEvent = data.find((event) => {
+    return event.event_ticket?.id === eventTicketId;
+  });
+
+  return matchedEvent || null;
 };

@@ -1,39 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { fetchOrders } from '../api/fetchOrders.ts';
-import TicketCard from '../components/TicketCard.tsx';
+import { fetchOrders } from '../api/fetchEvents.ts';
+import CreatedEventCard from './CreatedEventCard.tsx';
 
-function TicketList() {
-  const [orders, setOrders] = useState([]); // Przechowujemy zamówienia
+const CreatedEventList: React.FC = () => {
+  const [events, setEvents] = useState<any[]>([]); // Przechowujemy eventy
   const [loading, setLoading] = useState(true); // Stan ładowania
-  
+  const [error, setError] = useState<string | null>(null); // Obsługa błędów
 
-  // Pobieramy zamówienia z API
   useEffect(() => {
-    const loadOrders = async () => {
-      const response = await fetchOrders();
-      console.log(response);
-      setOrders(response);
-      setLoading(false);
+    const loadEvents = async () => {
+      try {
+        const response = await fetchOrders();
+        if (!response || !Array.isArray(response)) {
+          throw new Error("Invalid data format received.");
+        }
+        setEvents(response);
+      } catch (err) {
+        setError("Failed to load events. Please try again later.");
+        console.error("Error fetching events:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    loadOrders();
+    loadEvents();
   }, []);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 max-w-lg">
       {loading ? (
-        <p>Loading tickets...</p>
-      ) : orders.length > 0 ? (
-        <div className="flex flex-col gap-4">
-          {orders.map((order, index) => (
-            <TicketCard key={index} orderTicket={order.order_ticket} />
+        <p className="text-center text-gray-400">Loading events...</p>
+      ) : error ? (
+        <p className="text-center text-red-500">{error}</p>
+      ) : events.length > 0 ? (
+        <div className="flex flex-col gap-6 items-center">
+          {events.map((event) => (
+            <CreatedEventCard key={event.id} event={event} />
           ))}
         </div>
       ) : (
-        <p>No events found.</p>
+        <p className="text-center text-gray-400">No events found.</p>
       )}
     </div>
   );
-}
+};
 
-export default TicketList;
+export default CreatedEventList;

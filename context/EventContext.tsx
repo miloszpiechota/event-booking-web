@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { fetchEvents } from "../src/api/fetchEvents.ts";
+import { fetchOrders } from "../src/api/fetchEvents.ts";
 
 // Tworzymy kontekst
 const EventContext = createContext();
@@ -11,7 +11,7 @@ export const EventProvider = ({ children }) => {
 
   useEffect(() => {
     const getEvents = async () => {
-      const data = await fetchEvents();
+      const data = await fetchOrders();
       setEvents(data);
       setLoading(false);
     };

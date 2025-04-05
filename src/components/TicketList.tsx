@@ -1,19 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { fetchOrders } from '../api/fetchOrders.ts';
-import TicketCard from '../components/TicketCard.tsx';
+import React, { useEffect, useState } from "react";
+import { fetchOrders } from "../api/fetchOrders.ts";
+import TicketCard from "../components/TicketCard.tsx";
 
-function TicketList() {
-  const [orders, setOrders] = useState([]); // Przechowujemy zamówienia
-  const [loading, setLoading] = useState(true); // Stan ładowania
-  
+const TicketList: React.FC = () => {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Pobieramy zamówienia z API
   useEffect(() => {
     const loadOrders = async () => {
-      const response = await fetchOrders();
-      console.log(response);
-      setOrders(response);
-      setLoading(false);
+      try {
+        const response = await fetchOrders();
+        console.log("Orders received in TicketList:", response);
+
+        if (!response || !Array.isArray(response)) {
+          throw new Error("Invalid data format received.");
+        }
+        setOrders(response);
+      } catch (err) {
+        setError("Failed to load tickets. Please try again later.");
+        console.error("Error fetching orders:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadOrders();
@@ -22,18 +31,20 @@ function TicketList() {
   return (
     <div className="container mx-auto p-4">
       {loading ? (
-        <p>Loading tickets...</p>
+        <p className="text-center text-gray-400">Loading tickets...</p>
+      ) : error ? (
+        <p className="text-center text-red-500">{error}</p>
       ) : orders.length > 0 ? (
         <div className="flex flex-col gap-4">
-          {orders.map((order, index) => (
-            <TicketCard key={index} orderTicket={order.order_ticket} />
+          {orders.map((order) => (
+            <TicketCard key={order.id} order={order} />
           ))}
         </div>
       ) : (
-        <p>No tickets found.</p>
+        <p className="text-center text-gray-400">No tickets found.</p>
       )}
     </div>
   );
-}
+};
 
 export default TicketList;

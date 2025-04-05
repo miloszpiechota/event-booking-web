@@ -32,7 +32,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
   return (
     <div
-      className="max-w-3xl w-full backdrop-blur-lg shadow-lg rounded-lg overflow-hidden flex cursor-pointer transform transition-transform hover:scale-105 flex-col md:flex-row"
+      className="max-w-3xl w-full backdrop-blur-lg shadow-lg rounded-l-lg overflow-hidden flex cursor-pointer transform transition-transform hover:scale-105 flex-col md:flex-row"
       onClick={() => navigate(`/event/${event.id}`)}
     >
       {/* Sekcja obrazka */}
@@ -57,7 +57,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       </div>
 
       {/* Sekcja szczegółów */}
-      <div className="w-full md:w-1/3 bg-black text-white p-6 flex flex-col relative rounded-lg shadow-lg">
+      <div className="w-full md:w-1/3 bg-black text-white p-6 flex flex-col relative  rounded-r-lg shadow-lg">
         {/* Kontener dla daty */}
         <div className="w-full p-2 bg-gray-800 rounded-lg shadow-md flex flex-col items-center justify-center mb-4">
           <p className="text-3xl font-extrabold text-red-600 leading-tight">
@@ -75,14 +75,13 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
         <div className="w-full p-4 bg-gray-800 rounded-lg shadow-md flex flex-col items-center justify-center space-y-2 mb-4">
           {/* Ulica i numer mieszkania */}
           <p className="text-sm sm:text-base font-semibold text-gray-300 text-center">
-            📍{event.location.street_name}{" "}
-            {event.location.apartment_number &&
-              `${event.location.apartment_number}`}
-          </p>
-
-          {/* Miasto i kraj */}
-          <p className="text-sm sm:text-base font-semibold text-gray-300 text-center">
-            {event.location.city_name}, {event.location.country_name}
+            📍{" "}
+            {formatLocalization(
+              event.location.street_name,
+              event.location.apartment_number,
+              event.location.city_name,
+              event.location.country_name
+            )}
           </p>
         </div>
 

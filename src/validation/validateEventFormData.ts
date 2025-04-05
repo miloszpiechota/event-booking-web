@@ -66,12 +66,16 @@ export const validateEventFormData = (data:EventData): EventFormErrors => {
   
     // Walidacja adresu – ulica, numer, kod, miasto, kraj
 
-    if (!data.e_apartment_number.trim()) {
-      errors.e_apartment_number = "Apartment number is required";
-    } else if (!/^\d+(\/\d+)?$/.test(data.e_apartment_number.trim())) {
+    // if (!data.e_apartment_number.trim()) {
+    //   errors.e_apartment_number = "Apartment number is required";
+    // } else if (!/^\d+(\/\d+)?$/.test(data.e_apartment_number.trim())) {
+    //   errors.e_apartment_number = "Invalid apartment number format";
+    // }
+
+    if (data.e_apartment_number.trim() && !/^\d+(\/\d+)?$/.test(data.e_apartment_number.trim())) {
       errors.e_apartment_number = "Invalid apartment number format";
     }
-  
+    
     if (!data.e_street.trim()) {
       errors.e_street = "Street is required";
     } else if (data.e_street.trim().length > 100) {

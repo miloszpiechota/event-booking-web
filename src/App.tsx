@@ -14,6 +14,7 @@ import ShowEvent from './pages/ShowEvent.tsx';
 import BookEvent from './pages/BookEvent.tsx';
 import PaymentForm from './components/PaymentForm.tsx';
 import TicketBox from './pages/TicketBox.tsx';
+import EventBox from './pages/EventBox.tsx';
 import { TicketAvailabilityProvider } from "../context/TicketAvailabilityContext.tsx";
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
       <Route path="/event/:id/book" element={<BookEvent />} />
       <Route path="/event/:id/book/payment" element={<PaymentForm/>} />
       <Route path="/ticket-box" element={<TicketBox/>} />
+      <Route path="/your-created-events" element={<EventBox/>} />
     </Routes>
     </FormDataProvider>
     </EventProvider>

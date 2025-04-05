@@ -119,9 +119,12 @@ function ConfirmNewEvent() {
           </li>
           {ticketData.t_qr_code && (
             <li>
-              <strong>QR Code: </strong>
-              {ticketData.t_qr_code}
-            </li>
+            <strong>QR Code: </strong>
+            {ticketData.t_qr_code.length > 50 
+              ? ticketData.t_qr_code.substring(0, 50) + "..." 
+              : ticketData.t_qr_code}
+          </li>
+          
           )}
         </ul>
       </section>
