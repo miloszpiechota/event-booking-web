@@ -60,14 +60,14 @@ function TicketCard({ order }: { order: any }) {
     "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=600";
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
-      <div className="max-w-3xl w-full border border-gray-300 rounded-lg flex flex-row overflow-hidden shadow-lg">
+    <div className="flex flex-col items-center justify-center p-4  h-[400px]">
+      <div className="max-w-3xl w-full border border-black rounded-lg flex flex-row overflow-hidden shadow-lg">
         {/* Left Side: Event Image with overlay details */}
         <div
           className="relative w-2/3 bg-cover bg-center "
           style={{ backgroundImage: `url(${imageUrl})` }}
         >
-          <div className="absolute inset-0  bg-opacity-40"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
           <div className="relative z-10 p-6 flex flex-col justify-end h-full">
             <h2 className="text-3xl font-bold text-white mb-2">
               {order.order_ticket.event_ticket.name || "Event Name Unavailable"}
@@ -102,8 +102,9 @@ function TicketCard({ order }: { order: any }) {
         </div>
 
         {/* Right Side: Ticket Details & QR Code */}
-        <div className="w-1/3 bg-black text-white p-6 flex flex-col justify-between">
-          <div className="flex-1">
+        <div className="w-2/3 bg-black text-white p-6 flex flex-row justify-between items-start">
+          {/* Ticket Details */}
+          <div className="flex-1 pr-4">
             <div className="mb-3">
               <p className="text-xs uppercase text-gray-400">Start Date</p>
               <p className="text-lg font-bold">
@@ -120,7 +121,7 @@ function TicketCard({ order }: { order: any }) {
                   : "Not specified"}
               </p>
             </div>
-            
+
             <div className="mb-3">
               <p className="text-xs uppercase text-gray-400">Valid Until</p>
               <p className="text-lg font-bold">{validUntil}</p>
@@ -143,14 +144,17 @@ function TicketCard({ order }: { order: any }) {
               </p>
             </div>
           </div>
-          <div className="flex justify-center mt-4">
+
+         
+          {/* QR Code */}
+          <div className="flex-shrink-0 flex items-center justify-center ml-4 pl-4 border-l border-gray-600">
             {order.order_ticket.event_ticket.qr_code ? (
               <QRCode
                 value={order.order_ticket.event_ticket.qr_code}
                 size={100}
               />
             ) : (
-              <div className="text-gray-400">No QR Code Available</div>
+              <div className="text-gray-400 text-xs">No QR Code</div>
             )}
           </div>
         </div>

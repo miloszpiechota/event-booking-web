@@ -1,46 +1,50 @@
-import { useState } from 'react'
-
-import './App.css'
-import Home from './pages/Home.tsx';
-import CreateEvent from './pages/CreateEvent.tsx';
-import EventForm from './components/EventForm.tsx';
-import { Route, Routes } from 'react-router-dom';
-import EventTicketForm from './components/EventTicketForm.tsx';
-import Auth from './pages/Auth.tsx';
-import ConfirmNewEvent from './components/ConfirmNewEvent.tsx';
+// App.tsx
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/Home.tsx";
+import CreateEvent from "./pages/CreateEvent.tsx";
+import EventForm from "./components/EventForm.tsx";
+import EventTicketForm from "./components/EventTicketForm.tsx";
+import Auth from "./pages/Auth.tsx";
+import ConfirmNewEvent from "./components/ConfirmNewEvent.tsx";
+import ShowEvent from "./pages/ShowEvent.tsx";
+import BookEvent from "./pages/BookEvent.tsx";
+import PaymentForm from "./components/PaymentForm.tsx";
+import TicketBox from "./pages/TicketBox.tsx";
+import EventBox from "./pages/EventBox.tsx";
+import ProtectedRoute from "../src/pages/ProtectedRoute.tsx";
 import { FormDataProvider } from "../context/FormDataContext.tsx";
 import { EventProvider } from "../context/EventContext.tsx"; 
-import ShowEvent from './pages/ShowEvent.tsx';
-import BookEvent from './pages/BookEvent.tsx';
-import PaymentForm from './components/PaymentForm.tsx';
-import TicketBox from './pages/TicketBox.tsx';
-import EventBox from './pages/EventBox.tsx';
 import { TicketAvailabilityProvider } from "../context/TicketAvailabilityContext.tsx";
+
 function App() {
   return (
-<TicketAvailabilityProvider>
-    <EventProvider>
-    <FormDataProvider>
-      
-    <Routes>
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/create" element={<CreateEvent />} />
-      <Route path="/event-form" element={<EventForm />} />
-      <Route path="/event-ticket-form" element={<EventTicketForm />} />
-      <Route path="/confirm-new-event" element={<ConfirmNewEvent />} />
-      <Route path="/event/:id" element={<ShowEvent />} />
-      <Route path="/event/:id/book" element={<BookEvent />} />
-      <Route path="/event/:id/book/payment" element={<PaymentForm/>} />
-      <Route path="/ticket-box" element={<TicketBox/>} />
-      <Route path="/your-created-events" element={<EventBox/>} />
-    </Routes>
-    </FormDataProvider>
-    </EventProvider>
+    <TicketAvailabilityProvider>
+      <EventProvider>
+        <FormDataProvider>
+          <Routes>
+            {/* Trasa autoryzacji dostępna zawsze */}
+            <Route path="/auth" element={<Auth />} />
+            
+            {/* Wszystkie trasy zabezpieczone */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/create" element={<CreateEvent />} />
+              <Route path="/event-form" element={<EventForm />} />
+              <Route path="/event-ticket-form" element={<EventTicketForm />} />
+              <Route path="/confirm-new-event" element={<ConfirmNewEvent />} />
+              <Route path="/event/:id" element={<ShowEvent />} />
+              <Route path="/event/:id/book" element={<BookEvent />} />
+              <Route path="/event/:id/book/payment" element={<PaymentForm />} />
+              <Route path="/ticket-box" element={<TicketBox />} />
+              <Route path="/your-created-events" element={<EventBox />} />
+            </Route>
+          </Routes>
+        </FormDataProvider>
+      </EventProvider>
     </TicketAvailabilityProvider>
-    
-  )
+  );
 }
 
-export default App
+export default App;

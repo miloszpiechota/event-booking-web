@@ -1,8 +1,43 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../../supabaseClient.ts"; // dostosuj ścieżkę do swojego klienta
 
-// Możesz przekazać nazwę użytkownika jako prop, np. <Header username="Michał" />
-const Header = ({ username = "nazwa uzytkownika" }) => {
+const Header = () => {
+  const [username, setUsername] = useState<string>("...");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error("Failed to get user:", error.message);
+        setUsername("Guest");
+        return;
+      }
+
+      // Możesz użyć np. user.email lub user.user_metadata.full_name, jeśli masz to w metadanych
+      const nameFromMeta = user?.user_metadata?.full_name;
+      setUsername(nameFromMeta || user?.email || "User");
+    };
+
+    getUserInfo();
+  }, []);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error during logout:", error.message);
+      return;
+    }
+    setUsername("Guest");
+    // Przekierowanie do strony logowania, jeśli chcesz
+    navigate("/auth");
+  };
+
   return (
     <header className="text-white p-2 shadow-lg">
       <div className="container mx-auto flex items-center">
@@ -30,18 +65,21 @@ const Header = ({ username = "nazwa uzytkownika" }) => {
                   Your Ticket Box
                 </Link>
               </li>
-              {/* <li className="border-l-2 border-gray-300 px-6">
-                <Link to="/ticket-box" className="hover:text-gray-300 transition">
-                  Your Account
-                </Link>
-              </li> */}
             </ul>
           </nav>
         </div>
 
-        {/* Prawa sekcja: Powitanie użytkownika */}
-        <div className="flex-1 text-right">
-          <span>Hello, {username}</span>
+        {/* Prawa sekcja: Powitanie i link do wylogowania */}
+        <div className="flex-1 text-right flex flex-col items-end">
+          <span className="mb-1">Hello, {username}</span>
+          {username !== "Guest" && (
+            <button
+              onClick={handleLogout}
+              className="text-sm text-red-400 hover:text-red-300 transition"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </header>

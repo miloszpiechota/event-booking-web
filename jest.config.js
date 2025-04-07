@@ -10,11 +10,12 @@ export default {
     ],
     "^.+\\.(js|jsx)$": "babel-jest",
   },
-  extensionsToTreatAsEsm: [".ts", ".tsx"], // Ważne dla TypeScript!
+  extensionsToTreatAsEsm: [".ts", ".tsx"], 
   transformIgnorePatterns: [
     "/node_modules/(?![@autofiy/autofiyable|@autofiy/property]).+\\.js$",
     "/node_modules/(?![@autofiy/autofiyable|@autofiy/property]).+\\.ts$",
     "/node_modules/(?![@autofiy/autofiyable|@autofiy/property]).+\\.tsx$",
+    'node_modules/(?!(react-leaflet|@react-leaflet/core)/)',
     `/node_modules/(?!${esModules})`,
 
   ],

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { validateAddress } from "../validation/validateAddress.ts";
 import MapPicker from "./MapPicker.tsx";
 
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
 import { fetchEventCategory } from "../api/fetchEventCategory.ts";
