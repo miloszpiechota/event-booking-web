@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
 import { BookingContext } from "../../context/BookingContext.tsx";
 import EventCard from "./EventCardV.tsx";
 import validateBookingFormData from "../validation/validateBookingFormData.ts";
@@ -33,6 +34,7 @@ function BookingDetails({ onNextStep }) {
     email: false,
     phoneNumber: false,
   });
+
   const { availableTickets } = useTicketAvailability();
   const navigate = useNavigate();
 
@@ -69,9 +71,18 @@ function BookingDetails({ onNextStep }) {
     setTouchedFields((prev) => ({ ...prev, [field]: true }));
   };
 
-  const handleNext = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (isFormValid) onNextStep();
+    if (isFormValid && !isSoldOut) {
+      onNextStep(); // przejdź do płatności
+    } else {
+      setTouchedFields({
+        firstName: true,
+        lastName: true,
+        email: true,
+        phoneNumber: true,
+      });
+    }
   };
 
   return (
@@ -79,12 +90,16 @@ function BookingDetails({ onNextStep }) {
       {isSoldOut && (
         <p className="text-red-600 text-lg font-bold">⚠ Brak dostępnych biletów</p>
       )}
+
       <EventCard event={event} />
 
       <h2 className="text-2xl font-semibold mt-6 mb-6">Enter your personal details</h2>
 
-      <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {[
+      <form
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        onSubmit={handleSubmit}
+      >
+        {[ // formularz danych osobowych
           { label: "First Name", value: firstName, setter: setFirstName, placeholder: "Maciej", field: "firstName" },
           { label: "Last Name", value: lastName, setter: setLastName, placeholder: "Kuropatwa", field: "lastName" },
           { label: "Email Address", value: email, setter: setEmail, placeholder: "example@email.com", field: "email", type: "email" },
@@ -124,7 +139,9 @@ function BookingDetails({ onNextStep }) {
                 }`}
               />
             )}
-            {touchedFields[field] && errors[field] && <p className="text-red-500 text-xs mt-1">{errors[field]}</p>}
+            {touchedFields[field] && errors[field] && (
+              <p className="text-red-500 text-xs mt-1">{errors[field]}</p>
+            )}
           </div>
         ))}
 
@@ -137,7 +154,11 @@ function BookingDetails({ onNextStep }) {
             <button
               key={type}
               type="button"
-              className={`w-full py-3 rounded-lg text-white font-bold ${selectedPrice === event.event_ticket.ticket_pricing[type] ? "bg-red-600" : "bg-gray-400"}`}
+              className={`w-full py-3 rounded-lg text-white font-bold ${
+                selectedPrice === event.event_ticket.ticket_pricing[type]
+                  ? "bg-red-600"
+                  : "bg-gray-400"
+              }`}
               onClick={() => handleSelectPrice(event.event_ticket.ticket_pricing[type])}
             >
               {type === "ticket_price" ? "Standard" : "VIP"} - {event.event_ticket.ticket_pricing[type]} zł
@@ -159,8 +180,12 @@ function BookingDetails({ onNextStep }) {
         </div>
 
         <div className="col-span-2 mt-4">
-          <button type="button" onClick={handleNext} disabled={!isFormValid || isSoldOut} className="w-full bg-red-600 text-white font-semibold py-3 rounded hover:bg-red-700 transition-colors disabled:opacity-50">
-            Next
+          <button
+            type="submit"
+            disabled={!isFormValid || isSoldOut}
+            className="w-full bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 disabled:opacity-50 transition"
+          >
+            Przejdź do płatności
           </button>
         </div>
       </form>

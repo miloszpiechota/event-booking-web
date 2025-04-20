@@ -16,9 +16,14 @@ import ProtectedRoute from "../src/pages/ProtectedRoute.tsx";
 import { FormDataProvider } from "../context/FormDataContext.tsx";
 import { EventProvider } from "../context/EventContext.tsx"; 
 import { TicketAvailabilityProvider } from "../context/TicketAvailabilityContext.tsx";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
+import PaymentFormStripe from "./components/PaymentFormStripe.jsx";
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 function App() {
   return (
+    <Elements stripe={stripePromise}>
     <TicketAvailabilityProvider>
       <EventProvider>
         <FormDataProvider>
@@ -36,7 +41,8 @@ function App() {
               <Route path="/confirm-new-event" element={<ConfirmNewEvent />} />
               <Route path="/event/:id" element={<ShowEvent />} />
               <Route path="/event/:id/book" element={<BookEvent />} />
-              <Route path="/event/:id/book/payment" element={<PaymentForm />} />
+              {/* <Route path="/event/:id/book/payment" element={<PaymentForm />} /> */}
+              <Route path="/event/:id/book/payment" element={<PaymentFormStripe />} />
               <Route path="/ticket-box" element={<TicketBox />} />
               <Route path="/your-created-events" element={<EventBox />} />
             </Route>
@@ -44,6 +50,7 @@ function App() {
         </FormDataProvider>
       </EventProvider>
     </TicketAvailabilityProvider>
+    </Elements>
   );
 }
 

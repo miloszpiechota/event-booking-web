@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import EventTicketForm from "../../src/components/EventTicketForm";
+import EventTicketForm from "../../src/components/EventTicketForm.tsx";
 import { BrowserRouter } from "react-router-dom";
 import "@testing-library/jest-dom/extend-expect"; // zapewnia matchery takie jak toBeInTheDocument
 
