@@ -43,7 +43,7 @@ interface PaymentParams {
   ticketCount: number;
   ticketType: TicketType;
   totalPrice: number;
-  paymentMethod: string;
+  paymentMethod: number;
 }
 
 export async function handlePayment(params: PaymentParams): Promise<void> {

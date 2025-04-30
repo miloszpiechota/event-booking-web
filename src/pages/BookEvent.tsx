@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 
 import BookingDetails from "../components/BookingDetails.tsx";
 import BookingSummary from "../components/BookingSummary.tsx";
-import PaymentFormStripe from "../components/PaymentFormStripe.jsx"; // Upewnij się, że rozszerzenie pasuje do pliku
+import PaymentFormStripe from "../components/PaymentFormStripe.tsx"; // Upewnij się, że rozszerzenie pasuje do pliku
 import { BookingProvider } from "../../context/BookingContext.tsx";
 
 function BookEvent() {

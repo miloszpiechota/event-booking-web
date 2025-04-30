@@ -1,8 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { BookingContext } from "../../context/BookingContext.tsx";
 import { formatDateTime } from "../api/formatDateTime.ts";
-import { fetchPaymentMethod } from "../api/fetchPaymentMethod.ts";
-import { handlePayment, TicketType } from "../api/payment.ts";
 
 type BookingSummaryProps = {
   onCompletePayment: (method: string) => void;
@@ -10,14 +8,6 @@ type BookingSummaryProps = {
 
 function BookingSummary({ onCompletePayment }: BookingSummaryProps) {
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
-  const [isProcessingStripe, setIsProcessingStripe] = useState(false);
-  const [paymentMethods, setPaymentMethods] = useState<
-    { label: string; value: string }[]
-  >([
-    { label: "Credit Card", value: "credit_card" },
-    { label: "PayPal", value: "paypal" },
-    { label: "Apple Pay", value: "apple_pay" },
-  ]);
 
   const {
     event,
@@ -30,39 +20,12 @@ function BookingSummary({ onCompletePayment }: BookingSummaryProps) {
     ticketCount,
   } = useContext(BookingContext);
 
-  useEffect(() => {
-    const loadPaymentMethods = async () => {
-      const methods = await fetchPaymentMethod();
-      if (methods?.length > 0) {
-        setPaymentMethods(
-          methods.map((method: { name: string; id: string }) => ({
-            label: method.name,
-            value: method.id,
-          }))
-        );
-      }
-    };
-
-    loadPaymentMethods();
-  }, []);
-
   const { formattedStartDate, formattedEndDate } = formatDateTime(
     event.start_date,
     event.end_date
   );
 
   const totalPrice = selectedPrice ? selectedPrice * ticketCount : 0;
-
-  let ticketType: TicketType | "N/A" = "N/A";
-  const pricing = event?.event_ticket?.ticket_pricing;
-
-  if (pricing) {
-    if (selectedPrice === pricing.ticket_price) {
-      ticketType = "Standard";
-    } else if (selectedPrice === pricing.vip_price) {
-      ticketType = "VIP";
-    }
-  }
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -74,7 +37,10 @@ function BookingSummary({ onCompletePayment }: BookingSummaryProps) {
     isValidEmail(email) &&
     phonePrefix !== "" &&
     phoneNumber.trim() !== "" &&
-    isValidPhone(phoneNumber);
+    isValidPhone(phoneNumber) &&
+    selectedPrice &&
+    ticketCount > 0 &&
+    paymentMethod === "stripe";
 
   const renderField = (
     label: string,
@@ -96,37 +62,26 @@ function BookingSummary({ onCompletePayment }: BookingSummaryProps) {
       phonePrefix !== "" && isValidPhone(phoneNumber)
     );
 
-  const renderTicketType = () => (
-    <div className="flex justify-between">
-      <span className="text-gray-600">Ticket Type:</span>
-      <span className={`font-semibold ${ticketType === "N/A" ? "text-red-500" : ""}`}>
-        {ticketType !== "N/A" ? ticketType : "not selected"}
-      </span>
-    </div>
-  );
+  const renderTicketType = () => {
+    const pricing = event?.event_ticket?.ticket_pricing;
+    let ticketType = "N/A";
 
-  const onPaymentClick = async () => {
-    if (ticketType === "N/A") {
-      window.alert("Please select a valid ticket type.");
-      return;
+    if (pricing) {
+      if (selectedPrice === pricing.ticket_price) {
+        ticketType = "Standard";
+      } else if (selectedPrice === pricing.vip_price) {
+        ticketType = "VIP";
+      }
     }
 
-    await handlePayment({
-      event,
-      ticketCount,
-      ticketType,
-      totalPrice,
-      paymentMethod: paymentMethod || "",
-    });
-  };
-
-  const handleCompletePayment = () => {
-    if (paymentMethod === "stripe") {
-      setIsProcessingStripe(true);
-      onCompletePayment("stripe");
-    } else {
-      onPaymentClick();
-    }
+    return (
+      <div className="flex justify-between">
+        <span className="text-gray-600">Ticket Type:</span>
+        <span className={`font-semibold ${ticketType === "N/A" ? "text-red-500" : ""}`}>
+          {ticketType !== "N/A" ? ticketType : "not selected"}
+        </span>
+      </div>
+    );
   };
 
   return (
@@ -175,26 +130,22 @@ function BookingSummary({ onCompletePayment }: BookingSummaryProps) {
             <option value="" disabled>
               Select payment method
             </option>
-            {paymentMethods.map((method) => (
-              <option key={method.value} value={method.value}>
-                {method.label}
-              </option>
-            ))}
+            <option value="stripe">Stripe payments</option>
           </select>
         </div>
       </div>
 
       <div className="mt-6">
         <button
-          disabled={!isFormValid || isProcessingStripe}
-          onClick={handleCompletePayment}
+          disabled={!isFormValid}
+          onClick={() => onCompletePayment("stripe")}
           className={`w-full ${
-            isFormValid && !isProcessingStripe
+            isFormValid
               ? "bg-green-500 hover:bg-green-600"
               : "bg-gray-400 cursor-not-allowed"
           } text-white font-semibold py-3 rounded-lg transition`}
         >
-          {isProcessingStripe ? "Payment in process..." : "Complete Payment"}
+          Complete Payment
         </button>
       </div>
     </div>

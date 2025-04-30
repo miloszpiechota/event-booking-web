@@ -179,15 +179,7 @@ function BookingDetails({ onNextStep }) {
           />
         </div>
 
-        <div className="col-span-2 mt-4">
-          <button
-            type="submit"
-            disabled={!isFormValid || isSoldOut}
-            className="w-full bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 disabled:opacity-50 transition"
-          >
-            Przejdź do płatności
-          </button>
-        </div>
+       
       </form>
     </div>
   );
