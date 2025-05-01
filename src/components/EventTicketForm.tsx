@@ -12,13 +12,22 @@ const EventTicketForm = () => {
   const [qrCodeValue, setQrCodeValue] = useState("");
 
   useEffect(() => {
-    if (ticketData.t_ticket_name) {
-      // Używamy funkcji generateQrCode, aby wygenerować token i link do QR Code
-      const { token, qrLink } = generateQrCode(ticketData);
-      setQrCodeValue(qrLink);
-      setTicketData((prev) => ({ ...prev, t_qr_code: token }));
-    }
+    const generate = async () => {
+      if (ticketData.t_ticket_name) {
+        const ticketId = uuidv4();
+        const { token, qrLink } = await generateQrCode({
+          ticketId,
+          t_ticket_name: ticketData.t_ticket_name,
+        });
+  
+        setQrCodeValue(qrLink);
+        setTicketData((prev) => ({ ...prev, t_qr_code: token }));
+      }
+    };
+    generate();
   }, [ticketData.t_ticket_name]);
+  
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTicketData({ ...ticketData, [e.target.name]: e.target.value });

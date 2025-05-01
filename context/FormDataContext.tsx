@@ -42,6 +42,7 @@ export interface TicketData {
   t_qr_code: string;
   t_ticket_price: string;
   t_vip_price: string;
+  
 }
 
 interface FormDataContextType {
@@ -50,7 +51,8 @@ interface FormDataContextType {
   ticketData: TicketData;
   setOrganizerData: (data: OrganizerData) => void;
   //setEventData: (data: EventData) => void;
-  setTicketData: (data: TicketData) => void;
+  setTicketData: React.Dispatch<React.SetStateAction<TicketData>>;
+
   setEventData: React.Dispatch<React.SetStateAction<EventData>>;
 }
 
@@ -105,6 +107,7 @@ export const FormDataProvider = ({ children }: { children: ReactNode }) => {
     t_qr_code: "",
     t_ticket_price: "",
     t_vip_price: "",
+   
   });
 
   return (

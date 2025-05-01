@@ -1,16 +1,21 @@
-// generateQrCode.ts
-import { v4 as uuidv4 } from "uuid";
+export async function generateQrCode(data: { ticketId: string; t_ticket_name: string }) {
+  const issuedAt = Date.now();
+  const secretKey = "YOUR_SECRET_KEY";
+  const raw = `${data.ticketId}:${issuedAt}${secretKey}`;
 
-export function generateQrCode(data: { t_ticket_name: string; t_event_id?: string }) {
+  const buffer = new TextEncoder().encode(raw);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  const checksum = Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+
   const payload = {
-    ticketId: uuidv4(),
-    ticketName: data.t_ticket_name,
-    eventId: data.t_event_id,
-    issuedAt: Date.now(),
+    ticketId: data.ticketId,
+    issuedAt,
+    checksum,
   };
 
   const token = btoa(JSON.stringify(payload));
   const qrLink = `https://goEventApp.com/ticket?token=${token}`;
-
   return { token, qrLink };
 }

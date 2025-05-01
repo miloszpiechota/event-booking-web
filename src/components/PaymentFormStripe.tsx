@@ -87,7 +87,7 @@ const CheckoutForm = () => {
           ticketCount,
           ticketType: getTicketType(),
           totalPrice: totalAmount,
-          paymentMethod: "stripe",
+          paymentMethod: 3,
         });
 
         setMessage("✅ Płatność zakończona sukcesem!");
