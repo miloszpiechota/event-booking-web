@@ -1,31 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
+
 import QRCode from "react-qr-code";
 import validateEventTicketFormData from "../validation/validateEventTicketFormData.ts";
 import { useFormData } from "../../context/FormDataContext.tsx";
 import { generateQrCode } from "../api/generateQrCode.ts";
 const EventTicketForm = () => {
   const navigate = useNavigate();
-  const { ticketData, setTicketData } = useFormData();
+  const { ticketData, setTicketData,eventData } = useFormData();
   const [errors, setErrors] = useState({});
   const [qrCodeValue, setQrCodeValue] = useState("");
+  
+
 
   useEffect(() => {
     const generate = async () => {
-      if (ticketData.t_ticket_name) {
-        const ticketId = uuidv4();
-        const { token, qrLink } = await generateQrCode({
-          ticketId,
-          t_ticket_name: ticketData.t_ticket_name,
+      if (ticketData.t_ticket_name && eventData.e_event_name) {
+        const { token, qrLink, ticketId } = await generateQrCode({
+          ticketName: ticketData.t_ticket_name,
+          eventName: eventData.e_event_name,
         });
   
         setQrCodeValue(qrLink);
-        setTicketData((prev) => ({ ...prev, t_qr_code: token }));
+        setTicketData((prev) => ({
+          ...prev,
+          t_qr_code: token,
+          t_ticket_id: ticketId, // dodaj to do ticketData
+        }));
       }
     };
     generate();
-  }, [ticketData.t_ticket_name]);
+  }, [ticketData.t_ticket_name, eventData.e_event_name]);
+  
+  
   
   
 

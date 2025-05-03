@@ -32,16 +32,19 @@ export interface EventData {
   e_longitude: number;
   e_start_time: string;
   e_end_time: string;
-  e_event_category_id: string;
+  e_event_category_id: number;
   e_event_category_name: string;
 }
 
 export interface TicketData {
+  
   t_ticket_name: string;
   t_quantity: string;
   t_qr_code: string;
   t_ticket_price: string;
   t_vip_price: string;
+  t_ticket_id: string;
+
   
 }
 
@@ -97,7 +100,7 @@ export const FormDataProvider = ({ children }: { children: ReactNode }) => {
     e_longitude: 0,
     e_start_time: "",
     e_end_time: "",
-    e_event_category_id: "",
+    e_event_category_id: 0,
     e_event_category_name:"",
   });
 
@@ -107,6 +110,9 @@ export const FormDataProvider = ({ children }: { children: ReactNode }) => {
     t_qr_code: "",
     t_ticket_price: "",
     t_vip_price: "",
+    t_ticket_id: "",
+
+   
    
   });
 

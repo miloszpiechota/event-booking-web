@@ -1,9 +1,8 @@
-// src/api/payment.ts
 import { getUserToken, getUserId } from "../api/auth.ts";
 import { updateTicketQuantity } from "../api/updateTicketQuantity.ts"; // Import funkcji aktualizującej bilety
 
 interface TicketOrder {
-  event_ticket_id: number;
+  event_ticket_id: string; // UUID jako string
   quantity: number;
   unit_price: number;
   ticket_pricing_id: number;
@@ -16,7 +15,7 @@ interface PaymentRequestBody {
   ticket_order: TicketOrder;
   payment_method_id: string;
   total_price: number;
-  event_ticket_id: number;
+  event_ticket_id: string; // UUID jako string
 }
 
 interface EventTicketPricing {
@@ -26,7 +25,7 @@ interface EventTicketPricing {
 }
 
 interface EventTicket {
-  id: number;
+  id: string; // UUID jako string
   ticket_pricing: EventTicketPricing;
 }
 
@@ -39,7 +38,7 @@ export interface EventFormData {
 export type TicketType = "VIP" | "Standard";
 
 interface PaymentParams {
-  event: EventData;
+  event: EventFormData;
   ticketCount: number;
   ticketType: TicketType;
   totalPrice: number;
@@ -78,20 +77,20 @@ export async function handlePayment(params: PaymentParams): Promise<void> {
     const requestBody: PaymentRequestBody = {
       user_id: userId,
       ticket_order,
-      payment_method_id: paymentMethod,
+      payment_method_id: paymentMethod.toString(),
       total_price: totalPrice,
       event_ticket_id: event.event_ticket.id,
     };
 
     console.log("🛒 Wysyłane dane do API:", JSON.stringify(requestBody, null, 2));
 
-    // Pobranie domeny z .env (w Vite używamy import.meta.env)
     const supabaseFunctionDomain = import.meta.env.VITE_SUPABASE_FUNCTION_DOMAIN;
     if (!supabaseFunctionDomain) {
       console.error("Supabase function domain is not set in .env");
       window.alert("Server configuration error.");
       return;
     }
+
     const paymentUrl = `https://${supabaseFunctionDomain}.supabase.co/functions/v1/payment-process`;
 
     const response = await fetch(paymentUrl, {
@@ -111,12 +110,12 @@ export async function handlePayment(params: PaymentParams): Promise<void> {
       return;
     }
 
-    // **📉 Aktualizacja ilości biletów po udanej płatności**
+    // 📉 Aktualizacja ilości biletów po udanej płatności
     await updateTicketQuantity(event.event_ticket.id, ticketCount);
 
     window.alert("Order placed successfully!");
   } catch (error) {
-    console.error("Payment error:", error);
+    console.error("❌ Payment error:", error);
     window.alert("Failed to process the payment.");
   }
 }

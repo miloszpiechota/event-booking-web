@@ -24,6 +24,7 @@ export const fetchOrders = async () => {
       user_id,
       payment:payment_id(total_price),
       order_ticket:order_ticket_id(
+        event_ticket_id,
         quantity,
         unit_price,
         created_at,
