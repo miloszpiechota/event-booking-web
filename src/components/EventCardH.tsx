@@ -24,13 +24,11 @@ interface EventCard2Props {
 }
 
 const EventCard2: React.FC<EventCard2Props> = ({ event }) => {
-  const { availableTickets } = useTicketAvailability();
+ 
   const navigate = useNavigate();
   // Sprawdzamy, czy event jest wyprzedany
-  const isEventSoldOut =
-    event?.event_ticket?.quantity !== undefined &&
-    event.event_ticket.quantity <= 0;
-  const isSoldOut = isEventSoldOut || availableTickets <= 0;
+  const isSoldOut = event?.event_ticket?.quantity <= 0;
+
 
   // Formatowanie daty
   const { formattedStartDate, formattedEndDate } = formatDateTime(

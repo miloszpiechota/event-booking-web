@@ -15,16 +15,16 @@ import EventBox from "./pages/EventBox.tsx";
 import ProtectedRoute from "../src/pages/ProtectedRoute.tsx";
 import { FormDataProvider } from "../context/FormDataContext.tsx";
 import { EventProvider } from "../context/EventContext.tsx"; 
-import { TicketAvailabilityProvider } from "../context/TicketAvailabilityContext.tsx";
+
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import CheckoutForm from "./pages/CheckoutForm.tsx";
+
 import PaymentFormStripe from "./components/PaymentFormStripe.tsx";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 function App() {
   return (
     <Elements stripe={stripePromise}>
-    <TicketAvailabilityProvider>
+    
       <EventProvider>
         <FormDataProvider>
           <Routes>
@@ -50,7 +50,7 @@ function App() {
           </Routes>
         </FormDataProvider>
       </EventProvider>
-    </TicketAvailabilityProvider>
+   
     </Elements>
   );
 }
