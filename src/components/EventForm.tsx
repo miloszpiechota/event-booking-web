@@ -457,7 +457,7 @@ const EventForm = () => {
         <MapContainer
           style={{ height: "400px", width: "100%" }}
           zoom={13}
-          className="map-container"
+          className="map-container rounded-xl"
           center={[mapPosition.lat, mapPosition.lng]} // Konwersja na tablicę [lat, lng]
         >
           <TileLayer

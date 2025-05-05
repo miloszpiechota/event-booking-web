@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../../supabaseClient.ts"; // dostosuj ścieżkę do swojego klienta
+import { supabase } from "../../supabaseClient.ts";
 
 const Header = () => {
   const [username, setUsername] = useState<string>("...");
@@ -19,7 +19,6 @@ const Header = () => {
         return;
       }
 
-      // Możesz użyć np. user.email lub user.user_metadata.full_name, jeśli masz to w metadanych
       const nameFromMeta = user?.user_metadata?.full_name;
       setUsername(nameFromMeta || user?.email || "User");
     };
@@ -34,48 +33,59 @@ const Header = () => {
       return;
     }
     setUsername("Guest");
-    // Przekierowanie do strony logowania, jeśli chcesz
     navigate("/auth");
   };
 
   return (
-    <header className="text-white p-2 shadow-lg">
-      <div className="container mx-auto flex items-center">
-        {/* Lewa sekcja: Logo */}
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold">GoEvent SPA</h1>
+    <header className="sticky top-0 z-50 bg-black/40 backdrop-blur-lg text-white px-6 py-4 shadow-lg rounded-b-2xl">
+      <div className="container mx-auto flex flex-wrap items-center justify-between gap-y-4">
+        {/* Logo */}
+        <div className="flex items-center space-x-2">
+          <span className="text-2xl font-bold hover:scale-105 transition-transform duration-300">
+            🚀 GoEvent Platform
+          </span>
         </div>
 
-        {/* Środkowa sekcja: Nawigacja */}
-        <div className="flex-1 text-center">
-          <nav>
-            <ul className="flex justify-center space-x-6">
-              <li>
-                <Link to="/" className="hover:text-gray-300 transition">
-                  Home
-                </Link>
-              </li>
-              <li className="border-l-2 border-gray-300 px-6">
-                <Link to="/create" className="hover:text-gray-300 transition">
-                  Create New Event
-                </Link>
-              </li>
-              <li className="border-l-2 border-gray-300 px-6">
-                <Link to="/ticket-box" className="hover:text-gray-300 transition">
-                  Your Ticket Box
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
+        {/* Navigation */}
+        <nav className="w-full md:w-auto">
+          <ul className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-[20px]">
+            <li>
+              <Link
+                to="/"
+                className="relative group hover:text-white text-gray-300 transition"
+              >
+                Home
+                <span className="block h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/create"
+                className="relative group hover:text-white text-gray-300 transition"
+              >
+                Create Event
+                <span className="block h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/ticket-box"
+                className="relative group hover:text-white text-gray-300 transition"
+              >
+                Ticket Box
+                <span className="block h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
+              </Link>
+            </li>
+          </ul>
+        </nav>
 
-        {/* Prawa sekcja: Powitanie i link do wylogowania */}
-        <div className="flex-1 text-right flex flex-col items-end">
-          <span className="mb-1">Hello, {username}</span>
+        {/* User info + logout */}
+        <div className="flex items-center space-x-4 text-sm text-[17px]">
+          <span>👤 {username}</span>
           {username !== "Guest" && (
             <button
               onClick={handleLogout}
-              className="text-sm text-red-400 hover:text-red-300 transition"
+              className="text-red-400 hover:text-red-300 transition"
             >
               Logout
             </button>

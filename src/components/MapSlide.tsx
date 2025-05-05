@@ -13,125 +13,121 @@ const customIcon = new L.Icon({
   popupAnchor: [0, -32],
 });
 
-// Funkcja obliczająca odległość między dwoma punktami (Haversine formula)
-const getDistance = (
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-) => {
-  const toRad = (value: number) => (value * Math.PI) / 180;
+// Calculate distance using Haversine formula
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  const toRad = (value) => (value * Math.PI) / 180;
   const R = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
-const MapSlide: React.FC = () => {
+const MapSlide = () => {
   const { events, loading } = useEvents();
-  const navigate = useNavigate(); // ✅ PRZENIESIONE DO ŚRODKA KOMPONENTU!
-  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
-  const [nearestEvents, setNearestEvents] = useState<Event[]>([]);
+  const navigate = useNavigate();
+  const [userLocation, setUserLocation] = useState(null);
+  const [nearestEvents, setNearestEvents] = useState([]);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      (pos) =>
         setUserLocation({
-          lat: position.coords.latitude,
-          lon: position.coords.longitude,
-        });
-      },
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+        }),
       () => console.error("Nie udało się pobrać lokalizacji użytkownika")
     );
   }, []);
 
   useEffect(() => {
     if (userLocation && events.length > 0) {
-      const sortedEvents = [...events].sort((a, b) => {
-        const distA = getDistance(
+      const sorted = [...events].sort((a, b) => {
+        const dA = getDistance(
           userLocation.lat,
           userLocation.lon,
           a.location.latitude,
           a.location.longitude
         );
-        const distB = getDistance(
+        const dB = getDistance(
           userLocation.lat,
           userLocation.lon,
           b.location.latitude,
           b.location.longitude
         );
-        return distA - distB;
+        return dA - dB;
       });
-
-      setNearestEvents(sortedEvents.slice(0, 4));
+      setNearestEvents(sorted.slice(0, 4));
     }
   }, [userLocation, events]);
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 rounded-l-*">
-      <div className="max-w-3xl w-full backdrop-blur-lg shadow-lg rounded-lg overflow-hidden flex flex-col md:flex-row">
-        <div className="relative w-full md:w-2/3 min-h-[400px] p-4 bg-black">
-          <MapContainer
-            center={[52.2298, 21.0122]}
-            zoom={5}
-            className="w-full h-full rounded-lg border-solid border-4 border-red-600"
-          >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            {loading ? (
-              <p className="text-center text-white">Ładowanie wydarzeń...</p>
-            ) : (
-              events.map((event) => (
-                <Marker
-                  key={event.id}
-                  position={[event.location.latitude, event.location.longitude]}
-                  icon={customIcon}
-                >
-                  <Popup>
-                    <strong>{event.name}</strong>
-                    <br />
-                    📍 {event.location.city_name}
-                  </Popup>
-                </Marker>
-              ))
-            )}
-          </MapContainer>
+    <div className="flex flex-col items-center justify-center p-4">
+      <div className="max-w-5xl w-full flex flex-col md:flex-row gap-6 bg-black/40 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden">
+        <div className="relative w-full md:w-2/3 min-h-[400px] p-4">
+          <div className="w-full h-full rounded-2xl overflow-hidden shadow-lg ring-1 ring-white/10 backdrop-blur-md bg-black/20">
+            <MapContainer
+              center={[52.2298, 21.0122]}
+              zoom={5}
+              className="w-full h-[100%]"
+            >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              {loading ? (
+                <p className="text-center text-white">Loading events...</p>
+              ) : (
+                events.map((event) => (
+                  <Marker
+                    key={event.id}
+                    position={[
+                      event.location.latitude,
+                      event.location.longitude,
+                    ]}
+                    icon={customIcon}
+                  >
+                    <Popup>
+                      <strong>{event.name}</strong>
+                      <br />
+                      📍 {event.location.city_name}
+                    </Popup>
+                  </Marker>
+                ))
+              )}
+            </MapContainer>
+          </div>
         </div>
 
-        <div className="w-full md:w-1/3 bg-black text-white p-6 flex flex-col relative rounded-lg shadow-lg">
-          <h2 className="text-xl font-bold mb-3 text-center">
+        {/* Events near you */}
+        <div className="w-full md:w-1/3 bg-gradient-to-b from-black via-gray-900 to-black text-white p-6 rounded-2xl shadow-md">
+          <h2 className="text-xl font-bold mb-4 text-center">
             Events Near You
           </h2>
-
           {nearestEvents.length === 0 ? (
-            <p className="text-sm text-gray-200 text-center">
-              Brak wydarzeń...
+            <p className="text-sm text-gray-300 text-center justify-center">
+              No events nearby...
             </p>
           ) : (
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-3">
               {nearestEvents.map((event) => (
                 <div
-                  key={event.id} 
-                  onClick={() => navigate(`/event/${event.id}`)} // ✅ PRZEKIEROWANIE DZIAŁA POPRAWNIE
-                  className="bg-gray-800 p-2 rounded-lg shadow-md border border-gray-700 flex flex-col items-center text-center cursor-pointer hover:bg-gray-800 transition duration-200"
+                  key={event.id}
+                  onClick={() => navigate(`/event/${event.id}`)}
+                  className="cursor-pointer bg-gray-800/60 hover:bg-gray-700/80 transition duration-200 p-4 rounded-xl shadow hover:scale-[1.02]"
                 >
                   <h3 className="text-sm font-semibold">{event.name}</h3>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400">
                     📍 {event.location.city_name}
                   </p>
                   <p className="text-xs text-gray-500">
-                    📏 {getDistance(
-                      userLocation!.lat,
-                      userLocation!.lon,
+                    📏{" "}
+                    {getDistance(
+                      userLocation.lat,
+                      userLocation.lon,
                       event.location.latitude,
                       event.location.longitude
-                    ).toFixed(1)} km
+                    ).toFixed(1)}{" "}
+                    km
                   </p>
                 </div>
               ))}

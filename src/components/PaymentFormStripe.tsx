@@ -1,6 +1,11 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import { BookingContext } from "../../context/BookingContext.tsx";
 import { handlePayment, TicketType } from "../api/payment.ts";
 
@@ -9,14 +14,16 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
-      color: "#1F2937",
-      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      color: "#F3F4F6", // Tailwind's gray-100
+      fontFamily: '"Inter", system-ui, sans-serif',
       fontSmoothing: "antialiased",
       fontSize: "16px",
-      "::placeholder": { color: "#9CA3AF" },
+      "::placeholder": {
+        color: "#9CA3AF", // Tailwind's gray-400
+      },
     },
     invalid: {
-      color: "#EF4444",
+      color: "#EF4444", // red-500
       iconColor: "#EF4444",
     },
   },
@@ -46,12 +53,10 @@ const CheckoutForm = () => {
     return selectedPrice === pricing.vip_price ? "VIP" : "Standard";
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe || !elements || !isCardComplete) {
-      return;
-    }
+    if (!stripe || !elements || !isCardComplete) return;
 
     setIsProcessing(true);
     try {
@@ -67,7 +72,7 @@ const CheckoutForm = () => {
 
       const result = await stripe.confirmCardPayment(data.clientSecret, {
         payment_method: {
-          card: elements.getElement(CardElement),
+          card: elements.getElement(CardElement)!,
           billing_details: {
             name: `${firstName} ${lastName}`,
             email,
@@ -81,7 +86,6 @@ const CheckoutForm = () => {
       }
 
       if (result.paymentIntent?.status === "succeeded") {
-        // ✅ dopiero teraz wykonaj handlePayment
         await handlePayment({
           event,
           ticketCount,
@@ -89,7 +93,6 @@ const CheckoutForm = () => {
           totalPrice: totalAmount,
           paymentMethod: 3,
         });
-
         setMessage("✅ Płatność zakończona sukcesem!");
       }
     } catch (error) {
@@ -101,10 +104,13 @@ const CheckoutForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md space-y-6">
-      <h2 className="text-2xl font-semibold text-gray-800">Dane płatności</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-black/40 backdrop-blur-lg text-white p-6 rounded-2xl shadow-xl space-y-6"
+    >
+      <h2 className="text-2xl font-bold">Payment</h2>
 
-      <div className="border rounded-md p-4 shadow-sm focus-within:ring-2 focus-within:ring-green-500 transition">
+      <div className="rounded-lg bg-gray-800 px-4 py-3 focus-within:ring-2 focus-within:ring-red-500 transition">
         <CardElement
           options={CARD_ELEMENT_OPTIONS}
           onChange={(e) => setIsCardComplete(e.complete)}
@@ -114,18 +120,22 @@ const CheckoutForm = () => {
       <button
         type="submit"
         disabled={!stripe || !isCardComplete || isProcessing}
-        className={`w-full text-white py-2 px-4 rounded-md transition font-semibold ${
+        className={`w-full py-3 rounded-xl font-semibold transition ${
           isProcessing
-            ? "bg-gray-400 cursor-wait"
+            ? "bg-gray-500 cursor-wait"
             : isCardComplete
             ? "bg-green-600 hover:bg-green-700"
-            : "bg-gray-300 cursor-not-allowed"
+            : "bg-gray-700 cursor-not-allowed"
         }`}
       >
-        {isProcessing ? "Przetwarzanie..." : `Zapłać ${totalAmount.toFixed(2)} zł`}
+        {isProcessing
+          ? "Processing..."
+          : `Pay ${totalAmount.toFixed(2)} zł`}
       </button>
 
-      {message && <p className="text-center text-sm text-red-500">{message}</p>}
+      {message && (
+        <p className="text-center text-sm text-red-400 mt-2">{message}</p>
+      )}
     </form>
   );
 };
