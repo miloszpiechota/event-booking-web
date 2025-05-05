@@ -17,6 +17,7 @@ Both apps use **Supabase** as the backend (database, authentication, storage) an
 - **Payments**: Stripe API
 - **Maps & Location**: OpenStreetMap API (for address validation)
 - **QR Codes**: crypto-js (web) / expo-crypto (mobile)
+- **Testing***: Jest + React Testing Library
 
 ---
 
@@ -55,6 +56,23 @@ Both apps use **Supabase** as the backend (database, authentication, storage) an
 ---
 
 
+## ✅ Testing
+
+This app includes **unit** and **integration tests** written with:
+
+* `Jest`
+* `React Testing Library`
+
+We test:
+
+* Multi-step forms and field validations
+* QR code generation and form submission
+* Conditional navigation based on state and validation
+* Mocked API calls and geolocation lookups
+
+
+---
+
 ## 🧪 How the QR Code Works
 
 Each QR code contains this information:
@@ -82,8 +100,6 @@ When scanning the QR:
 3. If the new checksum is the same as the one in the QR – the code is valid.
 4. The app then looks for the ticket in the database by using the QR token.
 5. If the ticket is found and its status is `"paid"`, it can be marked as `"checked_in"`.
-
-
 
 ---
 
@@ -132,10 +148,19 @@ supabase/
 
 ---
 
-## 📸 Optional (Screenshots)
+## 📸 Screenshots
 
-You can add screenshots here to show the interface for:
-- Creating an event
+
+### 🔐 Authentication
+<img src="https://github.com/user-attachments/assets/978a64d3-54d4-4e72-a190-4c70da86802b" width="500" />
+
+### 📝 Create Event
+<img src="https://github.com/user-attachments/assets/90b0a402-7081-4208-b6ba-8983d2a61f42" width="500" />
+
+<img src="https://github.com/user-attachments/assets/4039c53d-debc-441d-9ae3-afed56f6fbd2" width="500"/>
+
+<img src="https://github.com/user-attachments/assets/a7c7cbde-492a-4df1-967b-8db47af16eff" width="500"/>
+
 - Ticket checkout
 - QR code in TicketBox
 - Mobile QR scanner
