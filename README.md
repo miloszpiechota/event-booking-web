@@ -119,6 +119,11 @@ npx expo install
 npx expo start
 ```
 
+### Stripe Server
+```bash
+cd stripe-server
+node server.js
+```
 Make sure to configure:
 - `.env` files with Supabase keys and QR secret key
 - Edge Functions via Supabase dashboard
@@ -160,6 +165,10 @@ supabase/
 <img src="https://github.com/user-attachments/assets/4039c53d-debc-441d-9ae3-afed56f6fbd2" width="500"/>
 
 <img src="https://github.com/user-attachments/assets/a7c7cbde-492a-4df1-967b-8db47af16eff" width="500"/>
+
+
+<img src="https://github.com/user-attachments/assets/087b7dc5-fc79-40e5-980c-4d3612d21413" width="500"/>
+
 
 - Ticket checkout
 - QR code in TicketBox
