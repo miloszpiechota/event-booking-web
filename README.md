@@ -1,13 +1,51 @@
 
 # 🎟️ Event Booking Platform
 
-**Event Booking Platform** is a full-stack project made with two main parts:
-- A **web app** built using **React (Vite)** -> https://github.com/miloszpiechota/event-booking-web.git
-- A **mobile app** built using **React Native with Expo** -> https://github.com/miloszpiechota/event-booking-app.git
-
-Both apps use **Supabase** as the backend (database, authentication, storage) and communicate through **API routes**. The system allows users to create, browse, purchase, and check tickets for events.
+A modern full-stack application for creating, browsing, and purchasing event tickets – available on **web** and **mobile**.
 
 ---
+
+## 📽️ Demo Videos
+
+- 🎫 [Buy Ticket | Web App](https://youtu.be/vfbKGoMXNcg)
+- ✏️ [Create New Event | Web App](https://youtu.be/vfbKGoMXNcg)
+- 📱 [Buy Ticket | Mobile App (Short)](https://youtube.com/shorts/qJOOIpKZPZE)
+- 📸 [Scan your Ticket using Mobile QR Code Scanner| Mobile App (Short)](https://youtube.com/shorts/9dW6a8WAZ9s)
+
+---
+
+## 🚀 Tech Stack
+
+| Platform | Stack                                 | Repo Link                                                                 |
+|----------|----------------------------------------|---------------------------------------------------------------------------|
+| 🌐 Web   | React (Vite), Tailwind, Supabase       | 👉 [event-booking-web](https://github.com/miloszpiechota/event-booking-web.git)     |
+| 📱 Mobile| React Native (Expo), Supabase          | 👉 [event-booking-app](https://github.com/miloszpiechota/event-booking-app.git)     |
+
+---
+
+## 🛠️ Key Features
+
+- 👤 User authentication (via Supabase)
+- 🗓️ Create & manage events
+- 🎫 Buy Standard or VIP tickets
+- 🧾 Checkout with Stripe
+- 📦 Store tickets with QR codes
+- 📲 Scan & validate tickets (mobile)
+- 🌍 Calendar + Map views
+
+---
+
+## 🧩 Backend
+
+Both apps share a unified backend powered by **Supabase** for:
+- 📄 Database (PostgreSQL)
+- 🔐 Auth
+- 📁 File storage
+- 📤 API communication
+
+---
+
+
 
 ## 📱 Technologies Used
 
@@ -154,6 +192,9 @@ supabase/
 ---
 
 ## 📸 Screenshots
+[▶️ Zobacz nagranie demo](https://youtu.be/vfbKGoMXNcg)
+[Create New Event](https://youtu.be/vfbKGoMXNcg)
+[Mobile App](https://youtube.com/shorts/qJOOIpKZPZE)
 
 
 ### 🔐 Authentication
