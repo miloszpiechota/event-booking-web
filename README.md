@@ -155,6 +155,7 @@ supabase/
 
 ## 📸 Screenshots
 [▶️ Zobacz nagranie demo](https://youtu.be/vfbKGoMXNcg)
+[Create New Event](https://youtu.be/vfbKGoMXNcg)
 
 ### 🔐 Authentication
 <img src="https://github.com/user-attachments/assets/978a64d3-54d4-4e72-a190-4c70da86802b" width="500" />
