@@ -139,6 +139,36 @@ When scanning the QR:
 4. The app then looks for the ticket in the database by using the QR token.
 5. If the ticket is found and its status is `"paid"`, it can be marked as `"checked_in"`.
 
+📸 QR Code Form:
+
+<img src="https://github.com/user-attachments/assets/a7c7cbde-492a-4df1-967b-8db47af16eff" width="400"/>
+
+
+📱 QR Code Scanner:
+
+
+---
+## 💳 Stripe Payments Integration
+
+To integrate Stripe payments in the app, I used **Supabase Edge Functions** to handle the backend logic. Here's how it was implemented step by step:
+### 🔐 Setting Environment Variables in your .env file
+```bash
+STRIPE_PUBLISHABLE_KEY = pk_test_XXX
+STRIPE_SECRET_KEY = sk_test_XXX
+
+```
+### 🛠️ Creating the Supabase Function
+
+A new function was initialized using the Supabase CLI:
+
+```bash
+supabase functions new payment-process
+```
+### 🚀 Deploying the Function
+```bash
+supabase functions deploy payment-process --project-ref <Your Supabase Project Reference ID>
+```
+
 ---
 
 ## 🚀 How to Run
@@ -162,6 +192,12 @@ npx expo start
 cd stripe-server
 node server.js
 ```
+
+
+### Testing
+```bash
+npm test
+```
 Make sure to configure:
 - `.env` files with Supabase keys and QR secret key
 - Edge Functions via Supabase dashboard
@@ -179,6 +215,9 @@ event-booking-web/
 
 supabase/
   └── Edge Functions and database setup
+
+__tests__/validation-test
+  └── Validation unit tests
 ```
 
 ---
@@ -192,13 +231,6 @@ supabase/
 ---
 
 ## 📸 Screenshots
-[▶️ Zobacz nagranie demo](https://youtu.be/vfbKGoMXNcg)
-[Create New Event](https://youtu.be/vfbKGoMXNcg)
-[Mobile App](https://youtube.com/shorts/qJOOIpKZPZE)
-
-
-### 🔐 Authentication
-<img src="https://github.com/user-attachments/assets/978a64d3-54d4-4e72-a190-4c70da86802b" width="500" />
 
 ### 📝 Create Event
 <img src="https://github.com/user-attachments/assets/90b0a402-7081-4208-b6ba-8983d2a61f42" width="500" />
@@ -208,7 +240,7 @@ supabase/
 <img src="https://github.com/user-attachments/assets/a7c7cbde-492a-4df1-967b-8db47af16eff" width="500"/>
 
 
-<img src="https://github.com/user-attachments/assets/087b7dc5-fc79-40e5-980c-4d3612d21413" width="500"/>
+<img src="https://github.com/user-attachments/assets/087b7dc5-fc79-40e5-980c-4d3612d21413" width="400"/>
 
 
 - Ticket checkout
