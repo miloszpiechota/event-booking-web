@@ -10,6 +10,7 @@ A modern full-stack application for creating, browsing, and purchasing event tic
 - 🎫 [Buy Ticket | Web App](https://youtu.be/vfbKGoMXNcg)
 - ✏️ [Create New Event | Web App](https://youtu.be/vfbKGoMXNcg)
 - 📱 [Buy Ticket | Mobile App (Short)](https://youtube.com/shorts/qJOOIpKZPZE)
+- 📸 [Scan your Ticket using Mobile QR Code Scanner| Mobile App (Short)](https://youtube.com/shorts/9dW6a8WAZ9s)
 
 ---
 
