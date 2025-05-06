@@ -1,4 +1,3 @@
-// src/components/ConfirmNewEvent.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormData } from "../../context/FormDataContext.tsx";
@@ -10,139 +9,97 @@ function ConfirmNewEvent() {
 
   const handleCreateEvent = async () => {
     await createNewEvent(eventData, organizerData, ticketData);
-    // Opcjonalnie: przekierowanie po udanym utworzeniu eventu
     // navigate("/events");
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
-      <h1 className="text-2xl font-bold mb-6 text-center">
-        Confirm Your Event Details
-      </h1>
+    <div className="max-w-5xl mx-auto px-6 py-10 text-white">
+      <div className="bg-black/40 backdrop-blur-lg p-8 rounded-2xl shadow-xl space-y-10">
+        <h1 className="text-3xl font-bold text-center">📄 Confirm Your Event</h1>
 
-      {/* Organizer Information */}
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Organizer Information</h2>
-        <ul className="list-disc list-inside space-y-1">
-          <li>
-            <strong>Name:</strong> {organizerData.u_first_name}{" "}
-            {organizerData.u_last_name}
-          </li>
-          <li>
-            <strong>Birth Date:</strong> {organizerData.u_birth_date}
-          </li>
-          <li>
-            <strong>Phone:</strong> {organizerData.u_contact_phone}
-          </li>
-          <li>
-            <strong>Email:</strong> {organizerData.u_contact_email}
-          </li>
-          <li>
-            <strong>Address:</strong> {organizerData.u_street}{" "}
-            {organizerData.u_apartment_number}, {organizerData.u_zip_code}{" "}
-            {organizerData.u_city}, {organizerData.u_country}
-          </li>
-          <li>
-            <strong>Additional Contact Info:</strong>{" "}
-            {organizerData.u_contact_info}
-          </li>
-        </ul>
-      </section>
+        {/* Organizer */}
+        <section className="bg-gray-800 p-6 rounded-xl shadow-md">
+          <h2 className="text-xl font-semibold mb-4">👤 Organizer Information</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-300">
+            <p><strong>Name:</strong> {organizerData.u_first_name} {organizerData.u_last_name}</p>
+            <p><strong>Birth Date:</strong> {organizerData.u_birth_date}</p>
+            <p><strong>Phone:</strong> {organizerData.u_contact_phone}</p>
+            <p><strong>Email:</strong> {organizerData.u_contact_email}</p>
+            <p className="sm:col-span-2">
+              <strong>Address:</strong> {organizerData.u_street} {organizerData.u_apartment_number}, {organizerData.u_zip_code} {organizerData.u_city}, {organizerData.u_country}
+            </p>
+            <p className="sm:col-span-2"><strong>Additional Info:</strong> {organizerData.u_contact_info}</p>
+          </div>
+        </section>
 
-      {/* Event Information */}
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Event Information</h2>
-        <ul className="list-disc list-inside space-y-1">
-          <li>
-            <strong>Event Name:</strong> {eventData.e_event_name}
-          </li>
-          <li>
-            <strong>Event Category:</strong> {eventData.e_event_category_name}
-          </li>
-          <li>
-            <strong>Start Date:</strong> {eventData.e_start_date} (
-            {eventData.e_start_time})
-          </li>
-          <li>
-            <strong>End Date:</strong> {eventData.e_end_date} (
-            {eventData.e_end_time})
-          </li>
-          <li>
-            <strong>Short Description:</strong> {eventData.e_short_descryp}
-          </li>
-          <li>
-            <strong>Long Description:</strong> {eventData.e_long_descryp}
-          </li>
-          <li>
-            <strong>Location:</strong> {eventData.e_street}{" "}
-            {eventData.e_apartment_number}, {eventData.e_zip_code}{" "}
-            {eventData.e_city}, {eventData.e_country}
-          </li>
-          <li>
-            <strong>Latitude/Longitude:</strong> {eventData.e_latitude},{" "}
-            {eventData.e_longitude}
-          </li>
+        {/* Event */}
+        <section className="bg-gray-800 p-6 rounded-xl shadow-md">
+          <h2 className="text-xl font-semibold mb-4">📍 Event Details</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-300">
+            <p><strong>Name:</strong> {eventData.e_event_name}</p>
+            <p><strong>Category:</strong> {eventData.e_event_category_name}</p>
+            <p><strong>Start:</strong> {eventData.e_start_date} ({eventData.e_start_time})</p>
+            <p><strong>End:</strong> {eventData.e_end_date} ({eventData.e_end_time})</p>
+            <p className="sm:col-span-2"><strong>Short Description:</strong> {eventData.e_short_descryp}</p>
+            <p className="sm:col-span-2"><strong>Long Description:</strong> {eventData.e_long_descryp}</p>
+            <p className="sm:col-span-2">
+              <strong>Location:</strong> {eventData.e_street} {eventData.e_apartment_number}, {eventData.e_zip_code} {eventData.e_city}, {eventData.e_country}
+            </p>
+            <p><strong>Latitude:</strong> {eventData.e_latitude}</p>
+            <p><strong>Longitude:</strong> {eventData.e_longitude}</p>
+          </div>
           {eventData.e_image_url && (
-            <li>
-              <strong>Event Image:</strong>
+            <div className="mt-4">
+              <p className="text-sm font-semibold mb-2">🖼️ Event Image:</p>
               <img
                 src={eventData.e_image_url}
                 alt="Event"
-                className="w-full max-h-60 object-cover mt-2 rounded"
+                className="w-full max-h-60 object-cover rounded-lg"
               />
-            </li>
+            </div>
           )}
-        </ul>
-      </section>
+        </section>
 
-      {/* Ticket Information */}
-      <section className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Ticket Information</h2>
-        <ul className="list-disc list-inside space-y-1">
-          <li>
-            <strong>Ticket Name:</strong> {ticketData.t_ticket_name}
-          </li>
-          <li>
-            <strong>Quantity:</strong> {ticketData.t_quantity}
-          </li>
-          <li>
-            <strong>Ticket Price:</strong>{" "}
-            {ticketData.t_ticket_price === "0"
-              ? "Free"
-              : `$${ticketData.t_ticket_price}`}
-          </li>
-          <li>
-            <strong>VIP Ticket Price:</strong>{" "}
-            {ticketData.t_vip_price === "0"
-              ? "Free"
-              : `$${ticketData.t_vip_price}`}
-          </li>
-          {ticketData.t_qr_code && (
-            <li>
-            <strong>QR Code: </strong>
-            {ticketData.t_qr_code.length > 50 
-              ? ticketData.t_qr_code.substring(0, 50) + "..." 
-              : ticketData.t_qr_code}
-          </li>
-          
-          )}
-        </ul>
-      </section>
+        {/* Ticket */}
+        <section className="bg-gray-800 p-6 rounded-xl shadow-md">
+          <h2 className="text-xl font-semibold mb-4">🎟️ Ticket Information</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-300">
+            <p><strong>Ticket Name:</strong> {ticketData.t_ticket_name}</p>
+            <p><strong>Quantity:</strong> {ticketData.t_quantity}</p>
+            <p>
+              <strong>Standard Price:</strong>{" "}
+              {ticketData.t_ticket_price === "0" ? "Free" : `${ticketData.t_ticket_price} zł`}
+            </p>
+            <p>
+              <strong>VIP Price:</strong>{" "}
+              {ticketData.t_vip_price === "0" ? "Free" : `${ticketData.t_vip_price} zł`}
+            </p>
+            {ticketData.t_qr_code && (
+              <p className="sm:col-span-2">
+                <strong>QR Code:</strong>{" "}
+                {ticketData.t_qr_code.length > 50
+                  ? ticketData.t_qr_code.substring(0, 50) + "..."
+                  : ticketData.t_qr_code}
+              </p>
+            )}
+          </div>
+        </section>
 
-      {/* Buttons */}
-      <div className="flex justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition"
-        >
-          Back
-        </button>
-        <button
-          onClick={handleCreateEvent}
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
-        >
-          Confirm & Submit
-        </button>
+        {/* Buttons */}
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-medium transition"
+          >
+            ← Back
+          </button>
+          <button
+            onClick={handleCreateEvent}
+            className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg font-semibold transition"
+          >
+            ✅ Confirm & Submit
+          </button>
+        </div>
       </div>
     </div>
   );

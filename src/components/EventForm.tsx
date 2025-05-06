@@ -150,7 +150,7 @@ const EventForm = () => {
         &larr; Back
       </button>
       <h1 className="text-2xl font-bold mb-10">Complete Your Event Data</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form autoComplete="off" onSubmit={handleSubmit} className="space-y-4">
         {/* Lewa kolumna – Event Data */}
 
         <h2 className="h2-primary">Event Data:</h2>

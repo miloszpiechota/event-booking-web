@@ -84,7 +84,7 @@ const CreateEvent = () => {
   return (
     <div className="max-w-2xl bg-black/40 backdrop-blur-lg mx-auto p-6 shadow-md rounded-lg mt-6 text-white">
       <h1 className="text-2xl font-bold mb-10">Complete Your Contact Data</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form autoComplete="off" onSubmit={handleSubmit} className="space-y-4">
         {/* Personal Data Section */}
         <h2 className="text-xl font-semibold border-b border-gray-500 pb-2">
           Personal Data

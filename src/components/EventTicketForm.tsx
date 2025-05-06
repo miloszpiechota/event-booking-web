@@ -57,7 +57,7 @@ const EventTicketForm = () => {
         &larr; Back
       </button>
       <h1 className="text-2xl font-bold mb-4">Complete your event data:</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form autoComplete="off" onSubmit={handleSubmit} className="space-y-4">
         <h2 className="h2-primary">Event Ticket Data:</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
