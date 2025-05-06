@@ -21,11 +21,6 @@ const ShowEvent = () => {
   }
 
   const event = events.find((event) => event.id.toString() === id);
-  const { formattedStartDate, formattedEndDate } = formatDateTime(
-    event?.start_date,
-    event?.end_date
-  );
-
   if (!event) {
     return (
       <p className="text-white text-center mt-10">
@@ -34,134 +29,174 @@ const ShowEvent = () => {
     );
   }
 
+  const { formattedStartDate, formattedEndDate } = formatDateTime(
+    event.start_date,
+    event.end_date
+  );
+
   return (
     <div className="bg-gray-900 min-h-screen text-white">
+      {/* Header */}
       <div className="absolute top-0 left-0 w-full z-10">
         <Header />
       </div>
 
-      {/* Hero */}
-      <div className="relative w-full h-[400px] bg-cover bg-center" style={{ backgroundImage: `url(${event.image_url})` }}>
+      {/* Hero Section */}
+      <div
+        className="relative w-full h-[400px] bg-cover bg-center"
+        style={{ backgroundImage: `url(${event.image_url})` }}
+      >
         <div className="absolute inset-0 bg-black/60" />
-        <div className="relative z-10 max-w-6xl mx-auto h-full flex justify-between items-start px-6 pt-24">
-          {/* Left - title & description */}
-          <div className="flex flex-col space-y-4 max-w-xl">
+        <div className="relative z-10 max-w-6xl mx-auto h-full flex items-end px-6 pb-12">
+          <div className="flex flex-col max-w-xl">
+            {/* BACK BUTTON */}
             <button
               onClick={() => navigate("/")}
-              className="text-white/80 hover:text-white text-sm font-medium"
+              className="text-white font-semibold text-base hover:text-red-400 transition mb-2 flex items-center gap-2"
             >
-              ← Back
+              <span className="text-xl">←</span> Back
             </button>
-            <h1 className="text-4xl font-bold">{event.name}</h1>
-            <p className="text-sm text-gray-300 max-w-md leading-relaxed">
+
+            {/* TITLE + DESCRIPTION */}
+            <h1 className="text-4xl font-bold text-white">{event.name}</h1>
+            <p className="text-sm text-gray-300 max-w-md leading-relaxed mt-2">
               {event.short_description}
             </p>
           </div>
+        </div>
+      </div>
 
-          {/* Right - Event Info */}
-          <div className="hidden lg:flex flex-col w-[400px] bg-black/50 backdrop-blur-md p-5 rounded-2xl shadow-xl text-white mt-8 ml-auto">
+      {/* Main Content Section - two columns */}
+      <div className="max-w-6xl mx-auto px-6 py-16 flex flex-col lg:flex-row gap-10">
+        {/* Left Column */}
+        <div className="w-full lg:w-2/3 space-y-10">
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Description</h2>
+            <p className="text-gray-300">{event.long_description}</p>
+          </section>
 
-            <h2 className="text-xl font-bold mb-4 text-center">Event Info</h2>
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">
+              Start Date & End Date
+            </h2>
+            <p className="text-gray-400">
+              Start:{" "}
+              <strong>
+                {formattedStartDate.formattedDate}{" "}
+                {formattedStartDate.formattedTime}
+              </strong>
+            </p>
+            <p className="text-gray-400">
+              End:{" "}
+              <strong>
+                {formattedEndDate.formattedDate}{" "}
+                {formattedEndDate.formattedTime}
+              </strong>
+            </p>
+          </section>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              {[formattedStartDate, formattedEndDate].map((date, index) => (
-                <div key={index} className="bg-gray-800 rounded-xl p-3 text-center shadow">
-                  <p className="text-2xl font-extrabold text-red-500">{date?.formattedDay}</p>
-                  <p className="text-sm uppercase font-semibold text-gray-300">{date?.formattedMonth}</p>
-                  <p className="text-xs text-gray-400">{date?.formattedYear}</p>
-                  <p className="text-xs text-gray-400">{date?.formattedTime}</p>
-                </div>
-              ))}
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">
+              Contact the Organizer
+            </h2>
+            <p className="text-gray-400">
+              📧 {event.event_organizer.contact_email}
+            </p>
+            <p className="text-gray-400">
+              📞 {event.event_organizer.contact_info}
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Category</h2>
+            <span className="inline-block bg-gray-700 px-4 py-2 rounded-full text-sm">
+              {event.event_category.name}
+            </span>
+          </section>
+        </div>
+
+        {/* Right Column */}
+        <div className="w-full lg:w-[450px] space-y-5">
+          {/* Event Info */}
+          <div className="bg-gradient-to-b from-black/70 via-gray-900 to-black/80 backdrop-blur-md p-6 rounded-2xl shadow-2xl space-y-6">
+            <h2 className="text-2xl font-bold text-center">🎟️ Event Info</h2>
+            <div className="flex flex-row gap-3 flex-wrap">
+              <span className="bg-gray-700 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                📅 <span className="font-semibold">Start:</span>{" "}
+                {formattedStartDate.formattedDate}{" "}
+                {formattedStartDate.formattedTime}
+              </span>
+              <span className="bg-gray-700 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                🛑 <span className="font-semibold">End:</span>{" "}
+                {formattedEndDate.formattedDate}{" "}
+                {formattedEndDate.formattedTime}
+              </span>
             </div>
 
-            <button className="text-sm text-blue-400 hover:underline block text-center mb-4">
+            <button className="text-sm text-blue-400 hover:underline text-center w-full">
               + Add to Calendar
             </button>
 
-            <h3 className="text-base font-semibold mb-2">Prices</h3>
-            <div className="flex gap-3 mb-6">
-              <span className="bg-gray-700 px-4 py-1.5 rounded-full text-xs font-medium">
-                {event.event_ticket.ticket_pricing.ticket_price} $
-              </span>
-              <span className="bg-gray-700 px-4 py-1.5 rounded-full text-xs font-medium">
-                {event.event_ticket.ticket_pricing.vip_price} $
-              </span>
+            <div>
+              <h3 className="text-base font-semibold mb-2">Ticket Types</h3>
+              <div className="flex flex-row gap-3 flex-wrap">
+                <span className="bg-gray-700 px-4 py-2 rounded-full text-sm font-medium flex items-center justify-between min-w-[120px]">
+                  <span>🎫 Standard</span>
+                  <span className="ml-2">
+                    {event.event_ticket.ticket_pricing.ticket_price} zł
+                  </span>
+                </span>
+                <span className="bg-gray-700 px-4 py-2 rounded-full text-sm font-medium flex items-center justify-between min-w-[120px]">
+                  <span>🥂 VIP</span>
+                  <span className="ml-2">
+                    {event.event_ticket.ticket_pricing.vip_price} zł
+                  </span>
+                </span>
+              </div>
             </div>
 
             <button
-              className="w-full bg-red-600 hover:bg-red-700 transition-colors px-5 py-2.5 rounded-xl text-white font-semibold text-sm"
-              onClick={() => navigate(`/event/${event.id}/book`, { state: { event } })}
+              className="w-full bg-red-600 hover:bg-red-700 transition px-5 py-3 rounded-xl text-white font-semibold text-base shadow-md"
+              onClick={() =>
+                navigate(`/event/${event.id}/book`, { state: { event } })
+              }
             >
-              Book Now
+              🔖 Book Now
             </button>
           </div>
-        </div>
-      </div>
 
-      {/* Description & Map */}
-      <div className="w-5/6 mx-auto mt-40 flex flex-col lg:flex-row gap-8">
-        {/* Left */}
-        <div className="w-full lg:w-2/3 space-y-6">
-          <h2 className="text-2xl font-semibold">Description</h2>
-          <p className="text-gray-300">{event.long_description}</p>
-
-          <h3 className="text-xl font-semibold">Start Date & End Date</h3>
-          <p className="text-gray-400">
-            Start: <strong>{formattedStartDate.formattedDate} {formattedStartDate.formattedTime}</strong>
-          </p>
-          {formattedEndDate && (
-            <p className="text-gray-400">
-              End: <strong>{formattedEndDate.formattedDate} {formattedEndDate.formattedTime}</strong>
+          {/* Map */}
+          <div className="bg-gray-800 p-4 rounded-2xl shadow-xl space-y-3">
+            <div className="w-full h-64 rounded-xl overflow-hidden ring-1 ring-white/10">
+              <MapContainer
+                center={[event.location.latitude, event.location.longitude]}
+                zoom={13}
+                className="w-full h-full"
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Marker
+                  position={[event.location.latitude, event.location.longitude]}
+                >
+                  <Popup>
+                    {formatLocalization(
+                      event.location.street_name,
+                      event.location.apartment_number,
+                      event.location.city_name,
+                      event.location.country_name
+                    )}
+                  </Popup>
+                </Marker>
+              </MapContainer>
+            </div>
+            <p className="text-center text-sm text-gray-300">
+              {formatLocalization(
+                event.location.street_name,
+                event.location.apartment_number,
+                event.location.city_name,
+                event.location.country_name
+              )}
             </p>
-          )}
-
-          <h3 className="text-xl font-semibold">How can I contact the organizer?</h3>
-          <p className="text-gray-400">Email: {event.event_organizer.contact_email}</p>
-          <p className="text-gray-400">Info: {event.event_organizer.contact_info}</p>
-        </div>
-
-        {/* Right - Map */}
-        <div className="w-full lg:w-1/3 bg-black/40 backdrop-blur-md p-6 rounded-2xl shadow-xl mt-10 lg:mt-0 ml-auto">
-          <div className="h-64 rounded-lg overflow-hidden mb-4">
-            <MapContainer
-              center={[event.location.latitude, event.location.longitude]}
-              zoom={13}
-              className="h-full w-full"
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="&copy; OpenStreetMap contributors"
-              />
-              <Marker position={[event.location.latitude, event.location.longitude]}>
-                <Popup>
-                  {formatLocalization(
-                    event.location.street_name,
-                    event.location.apartment_number,
-                    event.location.city_name,
-                    event.location.country_name
-                  )}
-                </Popup>
-              </Marker>
-            </MapContainer>
           </div>
-          <h2 className="text-center text-sm font-medium text-gray-300">
-            {formatLocalization(
-              event.location.street_name,
-              event.location.apartment_number,
-              event.location.city_name,
-              event.location.country_name
-            )}
-          </h2>
-        </div>
-      </div>
-
-      {/* Category Tag */}
-      <div className="w-5/6 mx-auto mt-8 pb-10">
-        <h3 className="text-xl font-semibold mb-4">Event Category</h3>
-        <div className="flex gap-2 flex-wrap">
-          <span className="bg-gray-700 px-4 py-2 rounded-full text-sm">
-            {event.event_category.name}
-          </span>
         </div>
       </div>
     </div>

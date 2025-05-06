@@ -5,7 +5,10 @@ import EventCard from "./EventCardV.tsx";
 import validateBookingFormData from "../validation/validateBookingFormData.ts";
 import { useTicketAvailability } from "../../context/TicketAvailabilityContext.tsx";
 
+
 function BookingDetails({ onNextStep }) {
+  const navigate = useNavigate();
+
   const {
     event,
     firstName,
@@ -25,7 +28,7 @@ function BookingDetails({ onNextStep }) {
   } = useContext(BookingContext);
 
   const { availableTickets } = useTicketAvailability();
-  const navigate = useNavigate();
+  
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
   const [touchedFields, setTouchedFields] = useState({});
@@ -197,7 +200,7 @@ function BookingDetails({ onNextStep }) {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">
-            Liczba biletów
+          The number of tickets
           </label>
           <input
             type="number"
@@ -221,7 +224,7 @@ function BookingDetails({ onNextStep }) {
             className="w-full rounded-md bg-gray-800 text-white border px-3 py-2 focus:outline-none border-gray-700 focus:ring-1 focus:ring-red-500"
           />
           <p className="text-sm text-gray-400 mt-1">
-            Dostępna liczba biletów: {availableTickets}
+          The available number of tickets is: {availableTickets}
           </p>
         </div>
       </form>

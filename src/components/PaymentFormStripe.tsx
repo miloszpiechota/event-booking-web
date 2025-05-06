@@ -1,5 +1,7 @@
 import React, { useContext, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { useNavigate } from "react-router-dom";
+
 import {
   Elements,
   CardElement,
@@ -30,6 +32,8 @@ const CARD_ELEMENT_OPTIONS = {
 };
 
 const CheckoutForm = () => {
+  const navigate = useNavigate();
+
   const stripe = useStripe();
   const elements = useElements();
   const {
@@ -94,6 +98,8 @@ const CheckoutForm = () => {
           paymentMethod: 3,
         });
         setMessage("✅ Płatność zakończona sukcesem!");
+        navigate("/ticket-box");
+
       }
     } catch (error) {
       console.error("❌ Payment error:", error);
