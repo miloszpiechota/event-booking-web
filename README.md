@@ -139,13 +139,6 @@ When scanning the QR:
 4. The app then looks for the ticket in the database by using the QR token.
 5. If the ticket is found and its status is `"paid"`, it can be marked as `"checked_in"`.
 
-📸 QR Code Form:
-
-<img src="https://github.com/user-attachments/assets/a7c7cbde-492a-4df1-967b-8db47af16eff" width="400"/>
-
-
-📱 QR Code Scanner:
-
 
 ---
 ## 💳 Stripe Payments Integration
@@ -239,10 +232,5 @@ __tests__/validation-test
 
 <img src="https://github.com/user-attachments/assets/a7c7cbde-492a-4df1-967b-8db47af16eff" width="500"/>
 
-
 <img src="https://github.com/user-attachments/assets/087b7dc5-fc79-40e5-980c-4d3612d21413" width="400"/>
 
-
-- Ticket checkout
-- QR code in TicketBox
-- Mobile QR scanner
